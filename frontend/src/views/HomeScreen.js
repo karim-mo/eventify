@@ -9,7 +9,7 @@ const HomeScreen = () => {
 				src='images/events2.jpg'
 				alt='Header Image'
 				width='100%'
-				style={{ marginBottom: '2%' }}
+				style={{ marginBottom: '2%', marginTop: '-2%' }}
 			></Image>
 
 			<Container>
@@ -68,6 +68,46 @@ const HomeScreen = () => {
 						</p>
 					</Col>
 				</Row>
+			</Container>
+			<Image
+				src='images/event3.jpg'
+				alt='Header Image'
+				width='100%'
+				style={{ marginBottom: '2%', marginTop: '2%' }}
+			></Image>
+			<Row
+				style={{
+					backgroundColor: 'whitesmoke',
+					height: '15s0px',
+					fontSize: '30pt',
+					textAlign: 'center',
+					marginBottom: '2%',
+				}}
+			>
+				<Col sm={12}>
+					<p>
+						“As both a participant and a host in two events of the
+						Prestige Conference, The hosting & delivery process
+						eventify offers is outstanding, and the management team
+						is very supportive. Would gladly stick around in future
+						events!” – <strong>John Doe</strong>
+					</p>
+				</Col>
+			</Row>
+			<Container className='text-center'>
+				<Row>
+					<Col sm={12}>
+						<h1>What are you waiting for ?</h1>
+						<h1> Join Now!</h1>
+						<br />
+						<LinkContainer to='/register'>
+							<Button>
+								Sign Up <i className='fas fa-arrow-right'></i>
+							</Button>
+						</LinkContainer>
+					</Col>
+				</Row>
+				<br />
 			</Container>
 		</div>
 	);

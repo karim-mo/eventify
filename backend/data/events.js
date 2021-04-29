@@ -1,23 +1,38 @@
 const events = [
 	{
-		Author: 'Admin User',
+		adminID: 0,
+		author: 'Admin User',
 		authorID: 0,
 		name: 'Adoma Event',
-		image: '/images/airpods.jpg',
-		description: 'Just an event lol',
+		image: '/images/slide3.jpg',
+		description: `Lorem ipsum dolor sit, amet consectetur
+                    adipisicing elit. Nam doloribus modi,
+                    facilis, ut possimus iste quae autem
+                    nisi accusamus veniam amet minus ratione
+                    voluptates totam velit animi iusto
+                    debitis dolorem?`,
 		category: 'Entertainment',
 		ticketPrice: 89.99,
 		availableTickets: 3,
+		virtual: false,
+		eventCountry: [
+			{
+				countryName: 'United States of America',
+				countryCode: 'US',
+			},
+			{
+				countryName: 'global',
+				countryCode: 'GLOBAL',
+			},
+		],
 		comments: [
 			{
-				commentID: 0,
 				user: 'John Doe',
 				userID: 1,
 				comment: 'Trash Event.',
 				hearts: 1,
 			},
 			{
-				commentID: 1,
 				user: 'Jane Doe',
 				userID: 2,
 				comment: 'Ignore the guy above, he trash.',
@@ -26,12 +41,12 @@ const events = [
 		],
 		joinedUsers: [
 			{
-				name: 'John Doe',
-				id: 1,
+				user: 'John Doe',
+				userID: 1,
 			},
 			{
-				name: 'Jane Doe',
-				id: 2,
+				user: 'Jane Doe',
+				userID: 2,
 			},
 		],
 		endsOn: {
@@ -41,27 +56,34 @@ const events = [
 		},
 	},
 	{
-		Author: 'Admin User',
-		authorID: 0,
+		adminID: 0,
+		author: 'John Doe',
+		authorID: 1,
 		name: 'YAAAAAY LOLOLOLOL',
 		image: '/images/alexa.jpg',
 		description: 'Join in and discover the fun!',
 		category: 'Technology',
 		ticketPrice: 99.99,
 		availableTickets: 5,
+		virtual: false,
+		eventCountry: [
+			{
+				countryName: 'Egypt',
+				countryCode: 'EG',
+			},
+		],
 		comments: [
 			{
-				commentID: 0,
-				user: 'John Doe',
-				userID: 1,
+				user: 'Jane Doe',
+				userID: 2,
 				comment: 'Trash Event.',
 				hearts: 1,
 			},
 		],
 		joinedUsers: [
 			{
-				name: 'Jane Doe',
-				id: 2,
+				user: 'Jane Doe',
+				userID: 2,
 			},
 		],
 		endsOn: {
@@ -71,27 +93,42 @@ const events = [
 		},
 	},
 	{
-		Author: 'Admin User',
-		authorID: 0,
+		adminID: 0,
+		author: 'John Doe',
+		authorID: 1,
 		name: 'YAAAAAY LOLO',
 		image: '/images/sample.jpg',
 		description: 'Dont join me pls',
 		category: 'Misc',
 		ticketPrice: 9999.99,
-		availableTickets: 2,
+		availableTickets: 0,
+		virtual: false,
+		eventCountry: [
+			{
+				countryName: 'United States of America',
+				countryCode: 'US',
+			},
+			{
+				countryName: 'Egypt',
+				countryCode: 'EG',
+			},
+			{
+				countryName: 'global',
+				countryCode: 'GLOBAL',
+			},
+		],
 		comments: [
 			{
-				commentID: 0,
-				user: 'John Doe',
-				userID: 1,
+				user: 'Jane Doe',
+				userID: 2,
 				comment: 'WTF??',
 				hearts: 1,
 			},
 		],
 		joinedUsers: [
 			{
-				name: 'Jane Doe',
-				id: 2,
+				user: 'Jane Doe',
+				userID: 2,
 			},
 		],
 		endsOn: {
@@ -101,27 +138,34 @@ const events = [
 		},
 	},
 	{
-		Author: 'Admin User',
-		authorID: 0,
+		adminID: 0,
+		author: 'Jane Doe',
+		authorID: 2,
 		name: 'YAAAAAY LOLOLOLOL',
 		image: '/images/alexa.jpg',
 		description: 'Join in and discover the fun!',
 		category: 'Technology',
 		ticketPrice: 99.99,
 		availableTickets: 5,
+		virtual: false,
+		eventCountry: [
+			{
+				countryName: 'United Kingdom',
+				countryCode: 'UK',
+			},
+		],
 		comments: [
 			{
-				commentID: 0,
-				user: 'John Doe',
-				userID: 1,
+				user: 'Jane Doe',
+				userID: 2,
 				comment: 'Trash Event.',
 				hearts: 1,
 			},
 		],
 		joinedUsers: [
 			{
-				name: 'Jane Doe',
-				id: 2,
+				user: 'Jane Doe',
+				userID: 2,
 			},
 		],
 		endsOn: {
@@ -131,7 +175,8 @@ const events = [
 		},
 	},
 	{
-		Author: 'Admin User',
+		adminID: 0,
+		author: 'Admin User',
 		authorID: 0,
 		name: 'YAAAAAY',
 		image: '/images/sample.jpg',
@@ -139,6 +184,13 @@ const events = [
 		category: 'Music',
 		ticketPrice: 99999.99,
 		availableTickets: 3,
+		virtual: false,
+		eventCountry: [
+			{
+				countryName: 'global',
+				countryCode: 'GLOBAL',
+			},
+		],
 		comments: [],
 		joinedUsers: [],
 		endsOn: {

@@ -1,4 +1,5 @@
 body {
+	overflow-x: hidden;
 }
 
 main {
@@ -11,5 +12,6 @@ main {
 }
 
 .tophead {
+	min-height: 6vh;
 	z-index: 999;
 }
