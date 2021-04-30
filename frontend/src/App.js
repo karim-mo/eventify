@@ -7,6 +7,7 @@ import EventScreen from './views/EventScreen';
 import EventDetails from './views/EventDetails';
 import Login from './views/Login';
 import Register from './views/Register';
+import Cart from './views/Cart';
 
 const App = () => {
 	return (
@@ -18,6 +19,7 @@ const App = () => {
 				<Route path='/event/details/:id' component={EventDetails} />
 				<Route path='/login' component={Login} />
 				<Route path='/register' component={Register} />
+				<Route path='/cart' component={Cart} />
 			</main>
 			<Footer />
 		</Router>

@@ -5,7 +5,8 @@ import { Col, Container, Jumbotron, Row } from 'react-bootstrap';
 import { listEvents } from '../actions/eventReducerActions';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
-import axios from 'axios';
+import Zoom from '@material-ui/core/Zoom';
+import Fade from '@material-ui/core/Fade';
 
 const EventScreen = () => {
 	const dispatch = useDispatch();
@@ -33,10 +34,18 @@ const EventScreen = () => {
 					<ErrorMessage variant='danger'>{error}</ErrorMessage>
 				) : (
 					<Row className='mt-4'>
-						{events.map((event) => (
-							<Col key={event._id} sm={12} md={4}>
-								<Event event={event} />
-							</Col>
+						{events.map((event, index) => (
+							<Fade
+								key={event._id}
+								in={true}
+								style={{
+									transitionDelay: `${index * 150}ms`,
+								}}
+							>
+								<Col sm={12} md={4}>
+									<Event event={event} />
+								</Col>
+							</Fade>
 						))}
 					</Row>
 				)}

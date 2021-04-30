@@ -19,7 +19,9 @@ const getUserInfo = () => {
 		: null;
 };
 
-const initalState = { userInfo: { user: getUserInfo() } };
+const initalState = {
+	userInfo: { user: getUserInfo(), isLogged: getUserInfo() ? true : false },
+};
 
 const store = createStore(
 	reducer,

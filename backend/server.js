@@ -23,15 +23,7 @@ const connectMongo = async () => {
 		);
 	} catch (error) {
 		console.error(`Error: ${error.message}`.red.underline.bold);
-		const conn = await mongoose.connect(process.env.MONGO_URI, {
-			useUnifiedTopology: true,
-			useNewUrlParser: true,
-			useCreateIndex: true,
-		});
-
-		console.log(
-			`MongoDB Connected: ${conn.connection.host}`.cyan.underline
-		);
+		process.exit(1);
 	}
 };
 
@@ -45,10 +37,8 @@ app.use(function (req, res, next) {
 		'Access-Control-Allow-Methods',
 		'GET, POST, OPTIONS, PUT, PATCH, DELETE'
 	);
-	res.setHeader(
-		'Access-Control-Allow-Headers',
-		'X-Requested-With,content-type'
-	);
+	res.setHeader('Access-Control-Allow-Headers', '*');
+
 	res.setHeader('Access-Control-Allow-Credentials', true);
 	next();
 });
