@@ -52,6 +52,14 @@ const userSchema = mongoose.Schema(
 			type: String,
 			required: true,
 		},
+		confirmationURL: {
+			type: String,
+			unique: true,
+		},
+		isConfirmed: {
+			type: Boolean,
+			default: false,
+		},
 		shippingAddresses: [shippingAddressSchema],
 		cart: [cartSchema],
 	},

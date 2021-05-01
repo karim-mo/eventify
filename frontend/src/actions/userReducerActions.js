@@ -66,7 +66,7 @@ export const loginUser = (info) => async (dispatch) => {
 	}
 };
 
-export const registerUser = (info) => async (dispatch) => {
+export const registerUser = (confirmationURL) => async (dispatch) => {
 	try {
 		dispatch({
 			type: USER_REGISTRATION_REQUEST,
@@ -81,10 +81,7 @@ export const registerUser = (info) => async (dispatch) => {
 		const { data } = await axios.put(
 			'/eventifyapi/user/auth',
 			{
-				email: info.email,
-				password: info.password,
-				name: info.name,
-				country: info.country,
+				confirmationURL,
 			},
 			config
 		);

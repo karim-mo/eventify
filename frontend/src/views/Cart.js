@@ -10,6 +10,7 @@ import {
 	Button,
 	Card,
 	Container,
+	Modal,
 } from 'react-bootstrap';
 import ErrorMessage from '../components/ErrorMessage';
 import Loading from '../components/Loading';
@@ -18,6 +19,7 @@ import Snackbar from '../components/Snackbar';
 
 const Cart = ({ history }) => {
 	const [open, setOpen] = useState(false);
+	const [placeOrderPrompt, setPlaceOrderPrompt] = useState(false);
 
 	const dispatch = useDispatch();
 
@@ -50,7 +52,7 @@ const Cart = ({ history }) => {
 	};
 
 	const placeOrderHandler = () => {
-		console.log('ok');
+		setPlaceOrderPrompt(true);
 	};
 
 	return (
@@ -62,6 +64,33 @@ const Cart = ({ history }) => {
 					variant='success'
 					message='Removed Item From Cart'
 				/>
+			)}
+			{placeOrderPrompt && (
+				<Modal show={placeOrderPrompt}>
+					<Modal.Header>
+						<Modal.Title>Attention!</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>
+						Placing an order will clear your cart contents and
+						you'll be redirected to Checkout to finish your payment
+						process, If you wish to add or remove your cart
+						contents, you may close this window and do so now.
+					</Modal.Body>
+					<Modal.Footer>
+						<Button
+							variant='secondary'
+							onClick={() => setPlaceOrderPrompt(false)}
+						>
+							Close
+						</Button>
+						<Button
+							variant='primary'
+							onClick={() => console.log('To order')}
+						>
+							Proceed To Checkout
+						</Button>
+					</Modal.Footer>
+				</Modal>
 			)}
 			<Row>
 				{loading ? (
@@ -194,7 +223,7 @@ const Cart = ({ history }) => {
 												user.cart.length === 0 ||
 												loading
 											}
-											onClick={() => placeOrderHandler()}
+											onClick={placeOrderHandler}
 										>
 											Place Order
 										</Button>

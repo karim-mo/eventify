@@ -6,11 +6,13 @@ import {
 	eventDetailsReducer,
 } from './reducers/eventsReducer';
 import { userInfoReducer } from './reducers/userReducer';
+import { userConfirmationReducer } from './reducers/confirmationReducer';
 
 const reducer = combineReducers({
 	eventList: eventListReducer,
 	eventDetails: eventDetailsReducer,
 	userInfo: userInfoReducer,
+	userConfirmation: userConfirmationReducer,
 });
 
 const getUserInfo = () => {
