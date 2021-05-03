@@ -152,6 +152,11 @@ const Order = ({ match, history }) => {
 										<ErrorMessage variant='warning'>
 											STATUS: PROCESSING PAYMENT
 										</ErrorMessage>
+									) : order.paymentDetails.status ===
+									  'CANCELLED' ? (
+										<ErrorMessage variant='danger'>
+											STATUS: CANCELLED
+										</ErrorMessage>
 									) : (
 										<ErrorMessage variant='success'>
 											STATUS: COMPLETED

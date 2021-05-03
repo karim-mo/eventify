@@ -22,7 +22,10 @@ const addToUserCart = asyncHandler(async (req, res) => {
 	const userOrders = await Order.find({ userID: user._id });
 	if (userOrders.length > 0) {
 		userOrders.forEach((order) => {
-			if (order.paymentDetails.status !== 'COMPLETED') {
+			if (
+				order.paymentDetails.status !== 'COMPLETED' &&
+				order.paymentDetails.status !== 'CANCELLED'
+			) {
 				res.status(400);
 				throw new Error(
 					'Please pay your pending orders before creating a new one'
@@ -30,10 +33,15 @@ const addToUserCart = asyncHandler(async (req, res) => {
 			}
 		});
 	}
+	// Handle ticket previously bought check.
 	const { eventID } = req.body;
 	if (eventID) {
 		const event = await Event.findById(eventID);
 		if (event) {
+			if (event.availableTickets <= 0) {
+				res.status(400);
+				throw new Error('Event ran out of tickets.');
+			}
 			const newTicket = {
 				name: event.name,
 				ticketPrice: event.ticketPrice,

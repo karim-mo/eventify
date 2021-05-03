@@ -12,8 +12,41 @@ import colors from 'colors';
 const router = express.Router();
 
 const editEventTickets = async (orderID) => {
-	// Deduct available tickets
+	try {
+		const order = await Order.findById(orderID);
+		const today = new Date();
+		let updatedOrderItems = await Promise.all(
+			order.orderItems.map(async (ticket) => {
+				const event = await Event.findById(ticket.eventID);
+				const date = new Date(
+					event.endsOn.year,
+					event.endsOn.month - 1,
+					event.endsOn.day + 1
+				);
+				if (today >= date || event.availableTickets <= 0) {
+					return;
+				}
+				return ticket;
+			})
+		);
+		updatedOrderItems = updatedOrderItems.filter((ticket) => ticket);
+		if (updatedOrderItems.length < order.orderItems.length) {
+			return false;
+		}
+
+		for (const ticket of order.orderItems) {
+			const _event = await Event.findById(ticket.eventID);
+			_event.availableTickets -= 1;
+			await _event.save();
+		}
+
+		return true;
+	} catch (e) {
+		console.error(e.message);
+	}
 };
+
+const buyTicketsForOrder = (orderID) => {};
 
 const getUserOrders = asyncHandler(async (req, res) => {
 	try {
@@ -221,44 +254,66 @@ const confirmOrder = asyncHandler(async (req, res) => {
 					return;
 				} else {
 					if (response.body.status === 'APPROVED') {
-						request.post(
-							`https://api-m.sandbox.paypal.com/v2/checkout/orders/${order.paymentDetails.paymentID}/capture`,
-							{
-								headers: {
-									'Content-Type': 'application/json',
-								},
-								auth: {
-									user: process.env.CLIENT_ID,
-									pass: process.env.CLIENT_PW,
-								},
+						const canPurchase = await editEventTickets(order._id);
+						if (canPurchase) {
+							request.post(
+								`https://api-m.sandbox.paypal.com/v2/checkout/orders/${order.paymentDetails.paymentID}/capture`,
+								{
+									headers: {
+										'Content-Type': 'application/json',
+									},
+									auth: {
+										user: process.env.CLIENT_ID,
+										pass: process.env.CLIENT_PW,
+									},
 
-								json: true,
-							},
-							asyncHandler(async (err, response) => {
-								if (err) {
-									res.status(500);
-									const err = new Error(
-										'Failed to process payment, contact customer support'
-									);
-									res.json({
-										message: err.message,
-										stack:
-											process.env.DEV_MODE ===
-											'production'
-												? null
-												: err.stack,
-									});
+									json: true,
+								},
+								asyncHandler(async (err, response) => {
+									if (err) {
+										res.status(500);
+										const err = new Error(
+											'Failed to process payment, contact customer support'
+										);
+										res.json({
+											message: err.message,
+											stack:
+												process.env.DEV_MODE ===
+												'production'
+													? null
+													: err.stack,
+										});
+										return;
+									}
+									order.paymentDetails = {
+										...order.paymentDetails,
+										status: response.body.status,
+										email_address:
+											response.body.payer.email_address,
+										payer: `${response.body.payer.name.given_name} ${response.body.payer.name.surname}`,
+									};
+									await order.save();
+									res.json({});
+									//Handle buying the tickets for the user.
 									return;
-								}
-								order.paymentDetails = {
-									...order.paymentDetails,
-									status: response.body.status,
-								};
-								await order.save();
-								res.json({});
-								return;
-							})
-						);
+								})
+							);
+						} else {
+							res.status(400);
+							const err = new Error(
+								'Cannot complete purchase, one or more events have ran out of tickets, Your Paypal account was not charged.'
+							);
+							order.paymentDetails.status = 'CANCELLED';
+							await order.save();
+							res.json({
+								message: err.message,
+								stack:
+									process.env.DEV_MODE === 'production'
+										? null
+										: err.stack,
+							});
+							return;
+						}
 					}
 				}
 			})
@@ -279,7 +334,6 @@ const getOrders = asyncHandler(async (req, res) => {
 const getOrderByID = asyncHandler(async (req, res) => {
 	const order = await Order.findById(req.params.id);
 	const { capture } = req.body;
-	console.log(req.body);
 	if (
 		order &&
 		(req.user._id.toString() === order.userID.toString() || req.user.admin)
@@ -308,7 +362,8 @@ const getOrderByID = asyncHandler(async (req, res) => {
 				}
 				if (
 					response.body.name &&
-					response.body.name === 'RESOURCE_NOT_FOUND'
+					response.body.name === 'RESOURCE_NOT_FOUND' &&
+					order.paymentDetails.status !== 'COMPLETED'
 				) {
 					request.post(
 						'https://api-m.sandbox.paypal.com/v2/checkout/orders',
@@ -366,7 +421,11 @@ const getOrderByID = asyncHandler(async (req, res) => {
 						})
 					);
 				} else {
-					if (response.body.status === 'APPROVED') {
+					if (
+						response.body.status === 'APPROVED' &&
+						order.paymentDetails.status !== 'APPROVED' &&
+						order.paymentDetails.status !== 'CANCELLED'
+					) {
 						order.paymentDetails.status = 'APPROVED';
 						await order.save();
 					}
@@ -382,37 +441,56 @@ const getOrderByID = asyncHandler(async (req, res) => {
 						promoCode: order.promoCode,
 						orderItems: order.orderItems,
 					});
-					if (response.body.status === 'APPROVED' && capture) {
+					if (
+						response.body.status &&
+						response.body.status === 'APPROVED' &&
+						capture &&
+						order.paymentDetails.status !== 'CANCELLED'
+					) {
 						// Capture it after updating client to be ready for next page refresh
-						console.log('Capturing after GET');
-						request.post(
-							`https://api-m.sandbox.paypal.com/v2/checkout/orders/${order.paymentDetails.paymentID}/capture`,
-							{
-								headers: {
-									'Content-Type': 'application/json',
-								},
-								auth: {
-									user: process.env.CLIENT_ID,
-									pass: process.env.CLIENT_PW,
-								},
+						const canPurchase = await editEventTickets(order._id);
+						if (canPurchase) {
+							request.post(
+								`https://api-m.sandbox.paypal.com/v2/checkout/orders/${order.paymentDetails.paymentID}/capture`,
+								{
+									headers: {
+										'Content-Type': 'application/json',
+									},
+									auth: {
+										user: process.env.CLIENT_ID,
+										pass: process.env.CLIENT_PW,
+									},
 
-								json: true,
-							},
-							asyncHandler(async (err, response) => {
-								if (err) {
-									const err = new Error(
-										'Failed to process payment, contact customer support'
-									);
-									console.log(`${err.message}`.red.bold);
-									return;
-								}
-								order.paymentDetails = {
-									...order.paymentDetails,
-									status: response.body.status,
-								};
-								await order.save();
-							})
-						);
+									json: true,
+								},
+								asyncHandler(async (err, response) => {
+									if (err) {
+										const err = new Error(
+											'Failed to process payment, contact customer support'
+										);
+										console.log(`${err.message}`.red.bold);
+										return;
+									}
+									order.paymentDetails = {
+										...order.paymentDetails,
+										status: response.body.status,
+										email_address:
+											response.body.payer.email_address,
+										payer: `${response.body.payer.given_name} ${response.body.payer.surname}`,
+									};
+									await order.save();
+									//Handle buying the tickets for the user.
+								})
+							);
+						} else {
+							res.status(400);
+							const err = new Error(
+								'Cannot complete purchase, one or more events have ran out of tickets, Your Paypal account was not charged.'
+							);
+							order.paymentDetails.status = 'CANCELLED';
+							await order.save();
+							return;
+						}
 					}
 				}
 			})
