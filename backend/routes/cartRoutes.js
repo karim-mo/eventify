@@ -3,6 +3,7 @@ import asyncHandler from 'express-async-handler';
 import { protect } from '../middleware/auth.js';
 import User from '../models/UserModel.js';
 import Event from '../models/EventModel.js';
+import Order from '../models/OrderModel.js';
 
 const router = express.Router();
 
@@ -17,7 +18,18 @@ const getUserCart = asyncHandler(async (req, res) => {
 });
 
 const addToUserCart = asyncHandler(async (req, res) => {
-	const user = await User.findById(req.user._id);
+	const user = req.user;
+	const userOrders = await Order.find({ userID: user._id });
+	if (userOrders.length > 0) {
+		userOrders.forEach((order) => {
+			if (order.paymentDetails.status !== 'COMPLETED') {
+				res.status(400);
+				throw new Error(
+					'Please pay your pending orders before creating a new one'
+				);
+			}
+		});
+	}
 	const { eventID } = req.body;
 	if (eventID) {
 		const event = await Event.findById(eventID);

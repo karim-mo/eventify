@@ -130,6 +130,14 @@ export const getCart = () => async (dispatch, getState) => {
 		dispatch({
 			type: USER_CART_RESET,
 		});
+
+		localStorage.setItem(
+			'userInfo',
+			JSON.stringify({
+				...user,
+				cart: data.cart,
+			})
+		);
 	} catch (e) {
 		dispatch({
 			type: USER_CART_FAIL,

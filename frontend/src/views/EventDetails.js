@@ -48,6 +48,7 @@ const EventDetails = ({ match }) => {
 		loading: cartLoading,
 		error: cartError,
 		addToCartSuccess: cartSuccess,
+		isLogged,
 	} = userInfo;
 
 	useEffect(() => {
@@ -177,7 +178,8 @@ const EventDetails = ({ match }) => {
 																	.year
 															) ||
 															event.availableTickets <=
-																0
+																0 ||
+															!isLogged
 														}
 														onClick={() =>
 															addToCartHandler(

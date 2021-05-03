@@ -7,6 +7,7 @@ import { errorHandler, notFound } from './middleware/errorHandler.js';
 import eventRoutes from './routes/eventRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
 
 dotenv.config();
 
@@ -49,6 +50,7 @@ app.use(express.json());
 app.use('/eventifyapi/events', eventRoutes);
 app.use('/eventifyapi/cart', cartRoutes);
 app.use('/eventifyapi/user', userRoutes);
+app.use('/eventifyapi/orders', orderRoutes);
 
 app.get('/', (req, res) => {
 	res.send('API online');

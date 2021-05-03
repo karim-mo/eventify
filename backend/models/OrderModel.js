@@ -35,7 +35,16 @@ const orderSchema = mongoose.Schema(
 			payer: { type: String },
 			email_address: { type: String },
 		},
+		promoCode: {
+			type: String,
+			default: 'n/a',
+		},
 		itemsPrice: {
+			type: Number,
+			required: true,
+			default: 0.0,
+		},
+		fees: {
 			type: Number,
 			required: true,
 			default: 0.0,

@@ -9,6 +9,7 @@ import Login from './views/Login';
 import Register from './views/Register';
 import Cart from './views/Cart';
 import Confirmation from './views/Confirmation';
+import Order from './views/Order';
 
 const App = () => {
 	return (
@@ -22,6 +23,7 @@ const App = () => {
 				<Route path='/register' component={Register} />
 				<Route path='/cart' component={Cart} />
 				<Route path='/confirmation/:id' component={Confirmation} />
+				<Route path='/orders/:id' component={Order} />
 			</main>
 			<Footer />
 		</Router>
