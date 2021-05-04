@@ -6,6 +6,9 @@ import {
 	ORDER_DETAILS_FAIL,
 	ORDER_DETAILS_REQUEST,
 	ORDER_DETAILS_SUCCESS,
+	ORDER_PROMO_FAIL,
+	ORDER_PROMO_SUCCESS,
+	ORDER_PROMO_REQUEST,
 } from '../types';
 
 export const ordersReducer = (state = { loading: false }, action) => {
@@ -55,6 +58,26 @@ export const orderDetailsReducer = (
 				loading: false,
 				fetched: false,
 				error: action.payload,
+			};
+		case ORDER_PROMO_REQUEST:
+			return { ...state, loading: true };
+		case ORDER_PROMO_SUCCESS:
+			return {
+				loading: false,
+				fetched: true,
+				order: action.payload,
+			};
+		case ORDER_PROMO_FAIL:
+			return {
+				...state,
+				loading: false,
+				fetched: false,
+				error: action.payload,
+			};
+		case 'ORDER_ERROR_RESET':
+			return {
+				...state,
+				error: null,
 			};
 		default:
 			return state;

@@ -10,12 +10,15 @@ import {
 	Card,
 	Button,
 	Container,
+	Form,
+	Modal,
 } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import ErrorMessage from '../components/ErrorMessage';
 import {
 	getOrderDetails_Capture,
 	getOrderDetails_NoCapture,
+	applyPromoCode,
 } from '../actions/orderReducerActions';
 import Loading from '../components/Loading';
 
@@ -33,7 +36,10 @@ const Order = ({ match, history }) => {
 		: null;
 
 	const [paymentLoading, setPaymentLoading] = useState(false);
+	const [promoLoading, setPromoLoading] = useState(false);
 	const [paymentError, setPaymentError] = useState(null);
+	const [promo, setPromo] = useState('');
+	const [promoModal, setPromoModal] = useState(false);
 
 	useEffect(() => {
 		if (!isLogged) {
@@ -50,6 +56,30 @@ const Order = ({ match, history }) => {
 			}, 5000);
 		}
 	}, [paymentError]);
+
+	useEffect(() => {
+		if (error && error.startsWith('Promo')) {
+			setPaymentError(error);
+			dispatch({
+				type: 'ORDER_ERROR_RESET',
+			});
+		}
+	}, [dispatch, error]);
+
+	const applyPromoHandler = () => {
+		setPromoModal(false);
+		setPaymentLoading(true);
+		dispatch(applyPromoCode(order.id, promo));
+		setPaymentLoading(false);
+	};
+
+	const ShowPromoModalHandler = () => {
+		if (promo) {
+			setPromoModal(true);
+		} else {
+			setPaymentError('Promo code cannot be an empty field.');
+		}
+	};
 
 	const createOrder = async (data, actions) => {
 		let token;
@@ -114,12 +144,34 @@ const Order = ({ match, history }) => {
 
 	return (
 		<Container>
+			{promoModal && (
+				<Modal show={promoModal}>
+					<Modal.Header>
+						<Modal.Title>Attention!</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>
+						Applying a promocode is permanent and irreversible for
+						this current order, Proceed?
+					</Modal.Body>
+					<Modal.Footer>
+						<Button
+							variant='secondary'
+							onClick={() => setPromoModal(false)}
+						>
+							Close
+						</Button>
+						<Button variant='primary' onClick={applyPromoHandler}>
+							Apply Promo Code
+						</Button>
+					</Modal.Footer>
+				</Modal>
+			)}
 			{paymentError && (
 				<ErrorMessage variant='danger'>{paymentError}</ErrorMessage>
 			)}
 			{loading ? (
 				<Loading />
-			) : error ? (
+			) : error && !error.startsWith('Promo') ? (
 				<ErrorMessage variant='danger'>{error}</ErrorMessage>
 			) : (
 				<>
@@ -227,10 +279,88 @@ const Order = ({ match, history }) => {
 											Total
 										</Col>
 										<Col xs={2} md={4}>
-											${order.totalPrice}
+											{order.totalPrice !=
+											order.fees + order.itemsPrice ? (
+												<p
+													style={{
+														display: 'inline',
+													}}
+												>
+													<strike>
+														$
+														{order.fees +
+															order.itemsPrice}
+													</strike>{' '}
+													${order.totalPrice}
+												</p>
+											) : (
+												order.totalPrice
+											)}
 										</Col>
 									</Row>
 								</ListGroup.Item>
+								{order.paymentDetails.status === 'PENDING' ? (
+									paymentLoading ? (
+										<ListGroup.Item>
+											<Loading />
+										</ListGroup.Item>
+									) : (
+										<ListGroup.Item>
+											<Row>
+												<Col xs={10} md={8}>
+													<Form.Group controlId='email'>
+														<Form.Control
+															disabled={
+																order.promoCode !==
+																'n/a'
+															}
+															className={
+																order.promoCode !==
+																'n/a'
+																	? 'form-control is-valid'
+																	: ''
+															}
+															type='text'
+															placeholder='Promo Code'
+															value={
+																order.promoCode !==
+																'n/a'
+																	? order.promoCode
+																	: promo
+															}
+															onChange={(e) =>
+																setPromo(
+																	e.target
+																		.value
+																)
+															}
+														></Form.Control>
+														{order.promoCode !=
+															'n/a' && (
+															<div className='valid-feedback'>
+																Promocode
+																Applied.
+															</div>
+														)}
+													</Form.Group>
+												</Col>
+												<Col xs={2} md={4}>
+													<Button
+														disabled={
+															order.promoCode !==
+															'n/a'
+														}
+														onClick={
+															ShowPromoModalHandler
+														}
+													>
+														Apply
+													</Button>
+												</Col>
+											</Row>
+										</ListGroup.Item>
+									)
+								) : null}
 								{order.paymentDetails.status === 'PENDING' ? (
 									paymentLoading ? (
 										<ListGroup.Item>

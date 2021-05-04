@@ -46,6 +46,20 @@ const editEventTickets = async (orderID) => {
 	}
 };
 
+const revertEventTickets = async (orderID) => {
+	try {
+		const order = await Order.findById(orderID);
+
+		for (const ticket of order.orderItems) {
+			const _event = await Event.findById(ticket.eventID);
+			_event.availableTickets += 1;
+			await _event.save();
+		}
+	} catch (e) {
+		console.error(e.message);
+	}
+};
+
 const buyTicketsForOrder = (orderID) => {};
 
 const getUserOrders = asyncHandler(async (req, res) => {
@@ -244,6 +258,8 @@ const confirmOrder = asyncHandler(async (req, res) => {
 					const err = new Error(
 						'Error processing your payment, please contact customer support.'
 					);
+					order.paymentDetails.status = 'CANCELLED';
+					await order.save();
 					res.json({
 						message: err.message,
 						stack:
@@ -253,7 +269,11 @@ const confirmOrder = asyncHandler(async (req, res) => {
 					});
 					return;
 				} else {
-					if (response.body.status === 'APPROVED') {
+					if (
+						response.body.status &&
+						response.body.status === 'APPROVED' &&
+						order.paymentDetails.status !== 'CANCELLED'
+					) {
 						const canPurchase = await editEventTickets(order._id);
 						if (canPurchase) {
 							request.post(
@@ -275,6 +295,7 @@ const confirmOrder = asyncHandler(async (req, res) => {
 										const err = new Error(
 											'Failed to process payment, contact customer support'
 										);
+										await revertEventTickets(order._id);
 										res.json({
 											message: err.message,
 											stack:
@@ -285,17 +306,43 @@ const confirmOrder = asyncHandler(async (req, res) => {
 										});
 										return;
 									}
-									order.paymentDetails = {
-										...order.paymentDetails,
-										status: response.body.status,
-										email_address:
-											response.body.payer.email_address,
-										payer: `${response.body.payer.name.given_name} ${response.body.payer.name.surname}`,
-									};
-									await order.save();
-									res.json({});
-									//Handle buying the tickets for the user.
-									return;
+									if (
+										response.body.status &&
+										response.body.status === 'COMPLETED'
+									) {
+										order.paymentDetails = {
+											...order.paymentDetails,
+											status: response.body.status,
+											email_address:
+												response.body.payer
+													.email_address,
+											payer: `${response.body.payer.name.given_name} ${response.body.payer.name.surname}`,
+										};
+										await order.save();
+										res.json({});
+										//Handle buying the tickets for the user.
+										return;
+									} else {
+										// A very unlikely condition to happen.
+										const err = new Error(
+											'Failed to process payment, contact customer support'
+										);
+										console.log(`${err.message}`.red.bold);
+										order.paymentDetails.status =
+											'CANCELLED';
+										await order.save();
+										await revertEventTickets(order._id);
+										res.status(500);
+										res.json({
+											message: err.message,
+											stack:
+												process.env.DEV_MODE ===
+												'production'
+													? null
+													: err.stack,
+										});
+										return;
+									}
 								})
 							);
 						} else {
@@ -363,7 +410,8 @@ const getOrderByID = asyncHandler(async (req, res) => {
 				if (
 					response.body.name &&
 					response.body.name === 'RESOURCE_NOT_FOUND' &&
-					order.paymentDetails.status !== 'COMPLETED'
+					order.paymentDetails.status !== 'COMPLETED' &&
+					order.paymentDetails.status !== 'APPROVED'
 				) {
 					request.post(
 						'https://api-m.sandbox.paypal.com/v2/checkout/orders',
@@ -468,18 +516,36 @@ const getOrderByID = asyncHandler(async (req, res) => {
 										const err = new Error(
 											'Failed to process payment, contact customer support'
 										);
+										await revertEventTickets(order._id);
 										console.log(`${err.message}`.red.bold);
 										return;
 									}
-									order.paymentDetails = {
-										...order.paymentDetails,
-										status: response.body.status,
-										email_address:
-											response.body.payer.email_address,
-										payer: `${response.body.payer.given_name} ${response.body.payer.surname}`,
-									};
-									await order.save();
-									//Handle buying the tickets for the user.
+									if (
+										response.body.status &&
+										response.body.status === 'COMPLETED'
+									) {
+										order.paymentDetails = {
+											...order.paymentDetails,
+											status: response.body.status,
+											email_address:
+												response.body.payer
+													.email_address,
+											payer: `${response.body.payer.given_name} ${response.body.payer.surname}`,
+										};
+										await order.save();
+										//Handle buying the tickets for the user.
+									} else {
+										// A very unlikely condition to happen.
+										const err = new Error(
+											'Failed to process payment, contact customer support'
+										);
+										console.log(`${err.message}`.red.bold);
+										order.paymentDetails.status =
+											'CANCELLED';
+										await order.save();
+										await revertEventTickets(order._id);
+										return;
+									}
 								})
 							);
 						} else {
@@ -509,7 +575,7 @@ const applyPromo = asyncHandler(async (req, res) => {
 		if (promoExists) {
 			const discount = promoExists.discount;
 			const totalPriceUpdated = order.totalPrice * (1 - discount);
-			order.totalPrice = totalPriceUpdated;
+			order.totalPrice = totalPriceUpdated.toFixed(2);
 			order.promoCode = promoExists.code;
 			await order.save();
 			request.post(
