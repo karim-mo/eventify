@@ -32,11 +32,7 @@ export const createOrderFromCart = () => async (dispatch, getState) => {
 				Authorization: `Bearer ${user.token}`,
 			},
 		};
-		const { data } = await axios.put(
-			'/eventifyapi/orders/userorders',
-			{},
-			config
-		);
+		const { data } = await axios.put('/v3/orders/userorders', {}, config);
 		if (data.message) {
 			throw new Error(data.message);
 		}
@@ -87,7 +83,7 @@ export const getOrderDetails_Capture = (orderID) => async (
 			},
 		};
 		const { data } = await axios.post(
-			`/eventifyapi/orders/${orderID}/special`,
+			`/v3/orders/${orderID}/special`,
 			{ capture: true },
 			config
 		);
@@ -138,7 +134,7 @@ export const getOrderDetails_NoCapture = (orderID) => async (
 			},
 		};
 		const { data } = await axios.post(
-			`/eventifyapi/orders/${orderID}/special`,
+			`/v3/orders/${orderID}/special`,
 			{},
 			config
 		);
@@ -189,7 +185,7 @@ export const applyPromoCode = (orderID, promo) => async (
 			},
 		};
 		const { data } = await axios.post(
-			`/eventifyapi/orders/${orderID}`,
+			`/v3/orders/${orderID}`,
 			{ promo },
 			config
 		);
@@ -237,7 +233,7 @@ export const getUserOrders = (pageNo) => async (dispatch, getState) => {
 			},
 		};
 		const { data } = await axios.get(
-			`/eventifyapi/orders/userorders?pageNo=${pageNo}`,
+			`/v3/orders/userorders?pageNo=${pageNo}`,
 			config
 		);
 

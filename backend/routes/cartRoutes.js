@@ -4,6 +4,7 @@ import { protect } from '../middleware/auth.js';
 import User from '../models/UserModel.js';
 import Event from '../models/EventModel.js';
 import Order from '../models/OrderModel.js';
+import Ticket from '../models/QRTicketModel.js';
 
 const router = express.Router();
 
@@ -33,7 +34,6 @@ const addToUserCart = asyncHandler(async (req, res) => {
 			}
 		});
 	}
-	// Handle ticket previously bought check.
 	const { eventID } = req.body;
 	if (eventID) {
 		const event = await Event.findById(eventID);
@@ -41,6 +41,16 @@ const addToUserCart = asyncHandler(async (req, res) => {
 			if (event.availableTickets <= 0) {
 				res.status(400);
 				throw new Error('Event ran out of tickets.');
+			}
+			const ticketPreviouslyPurchased = await Ticket.findOne({
+				eventID: eventID,
+				userID: user._id,
+			});
+			if (ticketPreviouslyPurchased) {
+				res.status(400);
+				throw new Error(
+					'Ticket previously purchased, can only buy 1 ticket per account.'
+				);
 			}
 			const newTicket = {
 				name: event.name,

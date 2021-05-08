@@ -18,9 +18,7 @@ export const listEvents = (pageNo) => async (dispatch, getState) => {
 			type: EVENT_LIST_REQUEST,
 		});
 
-		const { data } = await axios.get(
-			`/eventifyapi/events?pageNo=${pageNo}`
-		);
+		const { data } = await axios.get(`/v3/events?pageNo=${pageNo}`);
 
 		dispatch({
 			type: EVENT_LIST_SUCCESS,
@@ -43,7 +41,7 @@ export const getEventDetails = (id) => async (dispatch, getState) => {
 			type: EVENT_DETAILS_REQUEST,
 		});
 
-		const { data } = await axios.get(`/eventifyapi/events/${id}`);
+		const { data } = await axios.get(`/v3/events/${id}`);
 
 		dispatch({
 			type: EVENT_DETAILS_SUCCESS,
@@ -78,7 +76,7 @@ export const getUserHostedEvents = (pageNo) => async (dispatch, getState) => {
 		};
 
 		const { data } = await axios.get(
-			`/eventifyapi/events/userevents?pageNo=${pageNo}`,
+			`/v3/events/userevents?pageNo=${pageNo}`,
 			config
 		);
 

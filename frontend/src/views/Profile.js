@@ -19,6 +19,7 @@ import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 import Paginate from '../components/Paginate';
 import { getUserHostedEvents } from '../actions/eventReducerActions';
+import { getUserTickets } from '../actions/ticketsReducerActions';
 
 const Profile = ({ match, history }) => {
 	const dispatch = useDispatch();
@@ -44,6 +45,15 @@ const Profile = ({ match, history }) => {
 		pages: eventsPages,
 	} = userEvents;
 
+	const userTickets = useSelector((state) => state.userTickets);
+	const {
+		loading: ticketsLoading,
+		error: ticketsError,
+		fetched: ticketsFetched,
+		tickets,
+		pages: ticketsPages,
+	} = userTickets;
+
 	const userInfo = useSelector((state) => state.userInfo);
 	const { user, isLogged } = userInfo;
 
@@ -58,6 +68,7 @@ const Profile = ({ match, history }) => {
 					dispatch(getUserOrders(pageNo));
 					return;
 				case 'tickets':
+					dispatch(getUserTickets(pageNo));
 					return;
 				case 'hosted':
 					dispatch(getUserHostedEvents(pageNo));
@@ -208,34 +219,63 @@ const Profile = ({ match, history }) => {
 						</Tab>
 						<Tab eventKey='tickets' title='Tickets'>
 							<h2>My Tickets</h2>
-							<Table
-								striped
-								bordered
-								hover
-								responsive
-								className='table-sm'
-							>
-								<thead>
-									<tr>
-										<th>ID</th>
-										<th>PURCHASED ON</th>
-										<th>EVENT</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr>
-										<td>
-											<Link to='/'>
-												ibgsrogsronsgrnilgsrlgsrljgs
-											</Link>
-										</td>
-										<td>24/2/2021</td>
-										<td>
-											<Link to='/'>Adoma Event</Link>
-										</td>
-									</tr>
-								</tbody>
-							</Table>
+							{ticketsLoading ? (
+								<Loading />
+							) : ticketsError ? (
+								<ErrorMessage variant='info'>
+									{ticketsError}
+								</ErrorMessage>
+							) : (
+								<>
+									<Table
+										striped
+										bordered
+										hover
+										responsive
+										className='table-sm'
+									>
+										<thead>
+											<tr>
+												<th>ID</th>
+												<th>PURCHASED ON</th>
+												<th>EVENT</th>
+											</tr>
+										</thead>
+										<tbody>
+											{tickets.map((ticket) => (
+												<tr key={ticket._id}>
+													<td>
+														<Link
+															to={`/ticket/details/${ticket._id}`}
+														>
+															{ticket._id}
+														</Link>
+													</td>
+													<td>
+														{ticket.createdAt.slice(
+															0,
+															10
+														)}
+													</td>
+													<td>
+														<Link
+															to={`/event/details/${ticket.eventID}`}
+														>
+															{ticket.eventName}
+														</Link>
+													</td>
+												</tr>
+											))}
+										</tbody>
+									</Table>
+									<Paginate
+										pages={ticketsPages}
+										page={pageNo}
+										profileTickets
+										profileName={user.name}
+									/>
+								</>
+							)}
 						</Tab>
 						<Tab eventKey='hosted' title='Hosted Events'>
 							<h2>My Events</h2>
@@ -269,7 +309,7 @@ const Profile = ({ match, history }) => {
 												<tr key={event._id}>
 													<td>
 														<Link
-															to={`/events/${event._id}`}
+															to={`/event/details/${event._id}`}
 														>
 															{event._id}
 														</Link>

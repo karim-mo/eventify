@@ -28,6 +28,10 @@ const Paginate = ({
 										? `/members/${profileName}/profile/hosted/page/${
 												pageNo + 1
 										  }`
+										: profileTickets
+										? `/members/${profileName}/profile/tickets/page/${
+												pageNo + 1
+										  }`
 										: `/events/page/${pageNo + 1}`
 								}
 							>

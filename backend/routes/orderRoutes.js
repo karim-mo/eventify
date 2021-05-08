@@ -4,6 +4,7 @@ import User from '../models/UserModel.js';
 import Order from '../models/OrderModel.js';
 import Event from '../models/EventModel.js';
 import PromoCode from '../models/PromoModel.js';
+import Ticket from '../models/QRTicketModel.js';
 import { protect, admin } from '../middleware/auth.js';
 import request from 'request';
 import crypto from 'crypto';
@@ -60,7 +61,54 @@ const revertEventTickets = async (orderID) => {
 	}
 };
 
-const buyTicketsForOrder = (orderID) => {};
+const buyTicketsForOrder = async (orderID) => {
+	try {
+		const order = await Order.findById(orderID);
+		if (order) {
+			if (order.orderItems.length > 0) {
+				for (const ticket of order.orderItems) {
+					const event = await Event.findById(ticket.eventID);
+					if (event) {
+						const newTicket = await Ticket.create({
+							orderID: orderID,
+							userID: order.userID,
+							eventID: ticket.eventID,
+							eventName: event.name,
+							URL: 'N/A',
+						});
+						const URL = `http://localhost:5000/v3/tickets/${newTicket._id}`;
+						newTicket.URL = URL;
+						await newTicket.save();
+
+						const user = await User.findById(order.userID);
+						if (user) {
+							const newJoinedUser = {
+								user: user.name,
+								userID: user._id,
+							};
+							event.joinedUsers.push(newJoinedUser);
+							await event.save();
+						} else {
+							throw new Error(
+								'BuyTicketsForOrder(): Couldnt get user from ticket'
+							);
+						}
+					} else {
+						throw new Error(
+							'BuyTicketsForOrder(): Couldnt get event'
+						);
+					}
+				}
+			} else {
+				throw new Error('BuyTicketsForOrder(): Order Items are empty');
+			}
+		} else {
+			throw new Error('BuyTicketsForOrder(): Couldnt find order');
+		}
+	} catch (e) {
+		console.error(e.message);
+	}
+};
 
 const getUserOrders = asyncHandler(async (req, res) => {
 	const ordersPerPage = 12;
@@ -340,6 +388,7 @@ const confirmOrder = asyncHandler(async (req, res) => {
 											payer: `${response.body.payer.name.given_name} ${response.body.payer.name.surname}`,
 										};
 										await order.save();
+										await buyTicketsForOrder(order._id);
 										res.json({});
 										//Handle buying the tickets for the user.
 										return;
@@ -554,6 +603,8 @@ const getOrderByID = asyncHandler(async (req, res) => {
 											payer: `${response.body.payer.given_name} ${response.body.payer.surname}`,
 										};
 										await order.save();
+										await buyTicketsForOrder(order._id);
+
 										//Handle buying the tickets for the user.
 									} else {
 										// A very unlikely condition to happen.

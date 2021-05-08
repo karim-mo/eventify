@@ -41,7 +41,7 @@ export const loginUser = (info) => async (dispatch) => {
 		};
 
 		const { data } = await axios.post(
-			'/eventifyapi/user/auth',
+			'/v3/user/auth',
 			{
 				email: info.email,
 				password: info.password,
@@ -79,7 +79,7 @@ export const registerUser = (confirmationURL) => async (dispatch) => {
 		};
 
 		const { data } = await axios.put(
-			'/eventifyapi/user/auth',
+			'/v3/user/auth',
 			{
 				confirmationURL,
 			},
@@ -120,7 +120,7 @@ export const getCart = () => async (dispatch, getState) => {
 			},
 		};
 
-		const { data } = await axios.get('/eventifyapi/cart', config);
+		const { data } = await axios.get('/v3/cart', config);
 
 		dispatch({
 			type: USER_CART_SUCCESS,
@@ -174,7 +174,7 @@ export const addToCart = (eventID) => async (dispatch, getState) => {
 		};
 
 		const { data } = await axios.put(
-			'/eventifyapi/cart',
+			'/v3/cart',
 			{
 				eventID: eventID,
 			},
@@ -235,7 +235,7 @@ export const removeFromCart = (eventID) => async (dispatch, getState) => {
 			},
 		};
 
-		const { data } = await axios.delete('/eventifyapi/cart', config);
+		const { data } = await axios.delete('/v3/cart', config);
 
 		dispatch({
 			type: USER_CART_REMOVE_SUCCESS,

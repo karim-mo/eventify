@@ -12,6 +12,10 @@ const ticketSchema = mongoose.Schema(
 			required: true,
 			ref: 'Event',
 		},
+		eventName: {
+			type: String,
+			required: true,
+		},
 		orderID: {
 			type: mongoose.Schema.Types.ObjectId,
 			required: true,

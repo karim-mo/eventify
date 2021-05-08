@@ -92,7 +92,7 @@ const Order = ({ match, history }) => {
 			};
 
 			const { data: response } = await axios.get(
-				`/eventifyapi/orders/paypal/${order.id}`,
+				`/v3/orders/paypal/${order.id}`,
 				config
 			);
 			if (response.message) {
@@ -125,7 +125,7 @@ const Order = ({ match, history }) => {
 			};
 			dispatch(getOrderDetails_NoCapture(order.id));
 			const { data: response } = await axios.post(
-				`/eventifyapi/orders/userorders`,
+				`/v3/orders/userorders`,
 				{ orderID: order.id },
 				config
 			);

@@ -13,6 +13,7 @@ import {
 	ordersReducer,
 	userOrdersReducer,
 } from './reducers/ordersReducer';
+import { userTicketsReducer } from './reducers/ticketsReducer';
 
 const reducer = combineReducers({
 	eventList: eventListReducer,
@@ -23,6 +24,7 @@ const reducer = combineReducers({
 	orderDetails: orderDetailsReducer,
 	userOrders: userOrdersReducer,
 	userEvents: userEventsReducer,
+	userTickets: userTicketsReducer,
 });
 
 const getUserInfo = () => {

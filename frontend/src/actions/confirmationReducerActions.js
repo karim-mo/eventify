@@ -19,7 +19,7 @@ export const sendUserConfirmation = (info) => async (dispatch) => {
 		};
 
 		const { data } = await axios.put(
-			'/eventifyapi/user/confirm',
+			'/v3/user/confirm',
 			{
 				email: info.email,
 				password: info.password,
@@ -57,7 +57,7 @@ export const reSendUserConfirmation = (email) => async (dispatch) => {
 		};
 
 		const { data } = await axios.post(
-			'/eventifyapi/user/confirm',
+			'/v3/user/confirm',
 			{
 				email,
 			},

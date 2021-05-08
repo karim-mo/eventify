@@ -8,6 +8,7 @@ import eventRoutes from './routes/eventRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
+import ticketRoutes from './routes/ticketRoutes.js';
 
 dotenv.config();
 
@@ -47,10 +48,11 @@ app.use(function (req, res, next) {
 app.use(morgan('dev'));
 app.use(express.json());
 
-app.use('/eventifyapi/events', eventRoutes);
-app.use('/eventifyapi/cart', cartRoutes);
-app.use('/eventifyapi/user', userRoutes);
-app.use('/eventifyapi/orders', orderRoutes);
+app.use('/v3/events', eventRoutes);
+app.use('/v3/cart', cartRoutes);
+app.use('/v3/user', userRoutes);
+app.use('/v3/orders', orderRoutes);
+app.use('/v3/tickets', ticketRoutes);
 
 app.get('/', (req, res) => {
 	res.send('API online');
