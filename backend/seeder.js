@@ -98,6 +98,9 @@ const addToUserModel = async () => {
 		for (let user of users) {
 			let _user = await User.findById(user._id);
 			_user.ticketer = false;
+			if (!_user.name.startsWith('Karim')) {
+				_user.eventID = null;
+			}
 			await _user.save();
 		}
 

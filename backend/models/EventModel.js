@@ -81,10 +81,6 @@ const eventSchema = mongoose.Schema(
 			required: true,
 			default: false,
 		},
-		password: {
-			type: String,
-			required: true,
-		},
 		eventCountry: [eventCountrySchema],
 		comments: [commentSchema],
 		joinedUsers: [joinedUsersSchema],
@@ -98,19 +94,6 @@ const eventSchema = mongoose.Schema(
 		timestamps: true,
 	}
 );
-
-eventSchema.methods.matchPassword = async function (enteredPassword) {
-	return await bcrypt.compare(enteredPassword, this.password);
-};
-
-eventSchema.pre('save', async function (next) {
-	if (!this.isModified('password')) {
-		next();
-	}
-
-	const salt = await bcrypt.genSalt(10);
-	this.password = await bcrypt.hash(this.password, salt);
-});
 
 const Event = mongoose.model('Event', eventSchema);
 
