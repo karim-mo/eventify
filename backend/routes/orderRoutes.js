@@ -76,7 +76,7 @@ const buyTicketsForOrder = async (orderID) => {
 							eventName: event.name,
 							URL: 'N/A',
 						});
-						const URL = `http://localhost:5000/v3/tickets/${newTicket._id}`;
+						const URL = `http://localhost:3000/tickets/${newTicket._id}`;
 						newTicket.URL = URL;
 						await newTicket.save();
 

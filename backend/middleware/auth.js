@@ -34,4 +34,13 @@ const admin = (req, res, next) => {
 	}
 };
 
-export { protect, admin };
+const ticketer = (req, res, next) => {
+	if (req.user && req.user.ticketer) {
+		next();
+	} else {
+		res.status(401);
+		throw new Error('Not authorized as a ticketer');
+	}
+};
+
+export { protect, admin, ticketer };

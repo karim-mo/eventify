@@ -1,8 +1,11 @@
 import React from 'react';
 import { Jumbotron, Row, Col, Image, Button, Container } from 'react-bootstrap';
+import { useSelector } from 'react-redux';
 import { LinkContainer } from 'react-router-bootstrap';
 
 const HomeScreen = () => {
+	const userInfo = useSelector((state) => state.userInfo);
+	const { isLogged } = userInfo;
 	return (
 		<div className='home'>
 			<Image
@@ -94,21 +97,24 @@ const HomeScreen = () => {
 					</p>
 				</Col>
 			</Row>
-			<Container className='text-center'>
-				<Row>
-					<Col sm={12}>
-						<h1>What are you waiting for ?</h1>
-						<h1> Join Now!</h1>
-						<br />
-						<LinkContainer to='/register'>
-							<Button>
-								Sign Up <i className='fas fa-arrow-right'></i>
-							</Button>
-						</LinkContainer>
-					</Col>
-				</Row>
-				<br />
-			</Container>
+			{!isLogged && (
+				<Container className='text-center'>
+					<Row>
+						<Col sm={12}>
+							<h1>What are you waiting for ?</h1>
+							<h1> Join Now!</h1>
+							<br />
+							<LinkContainer to='/register'>
+								<Button>
+									Sign Up{' '}
+									<i className='fas fa-arrow-right'></i>
+								</Button>
+							</LinkContainer>
+						</Col>
+					</Row>
+					<br />
+				</Container>
+			)}
 		</div>
 	);
 };

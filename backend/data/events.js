@@ -1,3 +1,5 @@
+import bcrypt from 'bcryptjs';
+
 const events = [
 	{
 		adminID: 0,
@@ -15,6 +17,7 @@ const events = [
 		ticketPrice: 89.99,
 		availableTickets: 3,
 		virtual: false,
+		password: bcrypt.hashSync('123456', 10),
 		eventCountry: [
 			{
 				countryName: 'United States of America',
@@ -32,26 +35,11 @@ const events = [
 				comment: 'Trash Event.',
 				hearts: 1,
 			},
-			{
-				user: 'Jane Doe',
-				userID: 2,
-				comment: 'Ignore the guy above, he trash.',
-				hearts: 10,
-			},
 		],
-		joinedUsers: [
-			{
-				user: 'John Doe',
-				userID: 1,
-			},
-			{
-				user: 'Jane Doe',
-				userID: 2,
-			},
-		],
+		joinedUsers: [],
 		endsOn: {
 			day: 30,
-			month: 4,
+			month: 5,
 			year: 2021,
 		},
 	},
@@ -66,29 +54,18 @@ const events = [
 		ticketPrice: 99.99,
 		availableTickets: 5,
 		virtual: false,
+		password: bcrypt.hashSync('123456', 10),
 		eventCountry: [
 			{
 				countryName: 'Egypt',
 				countryCode: 'EG',
 			},
 		],
-		comments: [
-			{
-				user: 'Jane Doe',
-				userID: 2,
-				comment: 'Trash Event.',
-				hearts: 1,
-			},
-		],
-		joinedUsers: [
-			{
-				user: 'Jane Doe',
-				userID: 2,
-			},
-		],
+		comments: [],
+		joinedUsers: [],
 		endsOn: {
 			day: 1,
-			month: 5,
+			month: 6,
 			year: 2021,
 		},
 	},
@@ -100,9 +77,10 @@ const events = [
 		image: '/images/sample.jpg',
 		description: 'Dont join me pls',
 		category: 'Misc',
-		ticketPrice: 9999.99,
+		ticketPrice: 99.99,
 		availableTickets: 0,
 		virtual: false,
+		password: bcrypt.hashSync('123456', 10),
 		eventCountry: [
 			{
 				countryName: 'United States of America',
@@ -117,23 +95,11 @@ const events = [
 				countryCode: 'GLOBAL',
 			},
 		],
-		comments: [
-			{
-				user: 'Jane Doe',
-				userID: 2,
-				comment: 'WTF??',
-				hearts: 1,
-			},
-		],
-		joinedUsers: [
-			{
-				user: 'Jane Doe',
-				userID: 2,
-			},
-		],
+		comments: [],
+		joinedUsers: [],
 		endsOn: {
 			day: 28,
-			month: 4,
+			month: 5,
 			year: 2021,
 		},
 	},
@@ -148,29 +114,18 @@ const events = [
 		ticketPrice: 99.99,
 		availableTickets: 5,
 		virtual: false,
+		password: bcrypt.hashSync('123456', 10),
 		eventCountry: [
 			{
 				countryName: 'United Kingdom',
 				countryCode: 'UK',
 			},
 		],
-		comments: [
-			{
-				user: 'Jane Doe',
-				userID: 2,
-				comment: 'Trash Event.',
-				hearts: 1,
-			},
-		],
-		joinedUsers: [
-			{
-				user: 'Jane Doe',
-				userID: 2,
-			},
-		],
+		comments: [],
+		joinedUsers: [],
 		endsOn: {
 			day: 1,
-			month: 5,
+			month: 6,
 			year: 2021,
 		},
 	},
@@ -185,6 +140,7 @@ const events = [
 		ticketPrice: 99999.99,
 		availableTickets: 3,
 		virtual: false,
+		password: bcrypt.hashSync('123456', 10),
 		eventCountry: [
 			{
 				countryName: 'global',

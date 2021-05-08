@@ -31,11 +31,11 @@ connectMongo();
 const importData = async () => {
 	try {
 		// await Order.deleteMany();
-		// await Event.deleteMany();
+		await Event.deleteMany();
 		// await User.deleteMany();
 
-		const createdUsers = await User.insertMany(users);
-		const adminUser = createdUsers[0]._id;
+		// const createdUsers = await User.insertMany(users);
+		const adminUser = await User.findById('608c39f4eca4ca7624775945');
 
 		const _events = await Promise.all(
 			events.map(async (event) => {
@@ -45,7 +45,7 @@ const importData = async () => {
 
 				return {
 					...event,
-					adminID: adminUser,
+					adminID: adminUser._id,
 					authorID: _user._id,
 					comments: await Promise.all(
 						event.comments.map(async (comment) => {
@@ -92,8 +92,25 @@ const destroyData = async () => {
 	}
 };
 
+const addToUserModel = async () => {
+	try {
+		const users = await User.find({});
+		for (let user of users) {
+			let _user = await User.findById(user._id);
+			_user.ticketer = false;
+			await _user.save();
+		}
+
+		console.log('User Edited!'.green.inverse);
+		process.exit();
+	} catch (error) {
+		console.error(`${error}`.red.inverse);
+		process.exit(1);
+	}
+};
+
 if (process.argv[2] === '-d') {
 	destroyData();
 } else {
-	importData();
+	addToUserModel();
 }

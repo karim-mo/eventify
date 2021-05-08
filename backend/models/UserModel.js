@@ -48,6 +48,11 @@ const userSchema = mongoose.Schema(
 			required: true,
 			default: false,
 		},
+		ticketer: {
+			type: Boolean,
+			required: true,
+			default: false,
+		},
 		country: {
 			type: String,
 			required: true,

@@ -12,6 +12,8 @@ import Order from './views/Order';
 import Profile from './views/Profile';
 import PrivateRoute from './components/PrivateRoute';
 import { useEffect } from 'react';
+import Ticket from './views/Ticket';
+import TicketerPage from './views/TicketerPage';
 
 const App = () => {
 	return (
@@ -45,6 +47,16 @@ const App = () => {
 					path='/members/:name/profile/:key/page/:pageNo'
 					exact
 					component={Profile}
+				/>
+				<PrivateRoute
+					path='/ticket/details/:id'
+					exact
+					component={Ticket}
+				/>
+				<PrivateRoute
+					path='/tickets/:id'
+					exact
+					component={TicketerPage}
 				/>
 			</main>
 			<Footer />

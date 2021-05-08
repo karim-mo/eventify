@@ -1,4 +1,10 @@
 import {
+	PUBLIC_TICKET_DETAILS_FAIL,
+	PUBLIC_TICKET_DETAILS_REQUEST,
+	PUBLIC_TICKET_DETAILS_SUCCESS,
+	TICKET_DETAILS_FAIL,
+	TICKET_DETAILS_REQUEST,
+	TICKET_DETAILS_SUCCESS,
 	USER_TICKETS_FAIL,
 	USER_TICKETS_REQUEST,
 	USER_TICKETS_SUCCESS,
@@ -16,6 +22,51 @@ export const userTicketsReducer = (state = { loading: true }, action) => {
 				pages: action.payload.pages,
 			};
 		case USER_TICKETS_FAIL:
+			return {
+				loading: false,
+				fetched: false,
+				error: action.payload,
+			};
+		default:
+			return state;
+	}
+};
+
+export const ticketDetailsReducer = (state = { loading: true }, action) => {
+	switch (action.type) {
+		case TICKET_DETAILS_REQUEST:
+			return { loading: true };
+		case TICKET_DETAILS_SUCCESS:
+			return {
+				loading: false,
+				fetched: true,
+				ticket: action.payload,
+			};
+		case TICKET_DETAILS_FAIL:
+			return {
+				loading: false,
+				fetched: false,
+				error: action.payload,
+			};
+		default:
+			return state;
+	}
+};
+
+export const publicTicketDetailsReducer = (
+	state = { loading: true },
+	action
+) => {
+	switch (action.type) {
+		case PUBLIC_TICKET_DETAILS_REQUEST:
+			return { loading: true };
+		case PUBLIC_TICKET_DETAILS_SUCCESS:
+			return {
+				loading: false,
+				fetched: true,
+				ticket: action.payload,
+			};
+		case PUBLIC_TICKET_DETAILS_FAIL:
 			return {
 				loading: false,
 				fetched: false,
