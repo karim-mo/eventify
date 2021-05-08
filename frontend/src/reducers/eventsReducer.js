@@ -5,6 +5,9 @@ import {
 	EVENT_LIST_FAIL,
 	EVENT_LIST_REQUEST,
 	EVENT_LIST_SUCCESS,
+	USER_EVENTS_FAIL,
+	USER_EVENTS_REQUEST,
+	USER_EVENTS_SUCCESS,
 } from '../types';
 
 export const eventListReducer = (
@@ -15,7 +18,12 @@ export const eventListReducer = (
 		case EVENT_LIST_REQUEST:
 			return { ...state, loading: true };
 		case EVENT_LIST_SUCCESS:
-			return { loading: false, success: true, events: action.payload };
+			return {
+				loading: false,
+				success: true,
+				events: action.payload.events,
+				pages: action.payload.pages,
+			};
 		case EVENT_LIST_FAIL:
 			return { loading: false, success: false, error: action.payload };
 		default:
@@ -42,6 +50,28 @@ export const eventDetailsReducer = (
 			return { loading: false, success: true, event: action.payload };
 		case EVENT_DETAILS_FAIL:
 			return { loading: false, success: false, error: action.payload };
+		default:
+			return state;
+	}
+};
+
+export const userEventsReducer = (state = { loading: true }, action) => {
+	switch (action.type) {
+		case USER_EVENTS_REQUEST:
+			return { loading: true };
+		case USER_EVENTS_SUCCESS:
+			return {
+				loading: false,
+				fetched: true,
+				events: action.payload.events,
+				pages: action.payload.pages,
+			};
+		case USER_EVENTS_FAIL:
+			return {
+				loading: false,
+				fetched: false,
+				error: action.payload,
+			};
 		default:
 			return state;
 	}

@@ -9,6 +9,9 @@ import {
 	ORDER_PROMO_FAIL,
 	ORDER_PROMO_SUCCESS,
 	ORDER_PROMO_REQUEST,
+	USER_ORDERS_FAIL,
+	USER_ORDERS_SUCCESS,
+	USER_ORDERS_REQUEST,
 } from '../types';
 
 export const ordersReducer = (state = { loading: false }, action) => {
@@ -78,6 +81,28 @@ export const orderDetailsReducer = (
 			return {
 				...state,
 				error: null,
+			};
+		default:
+			return state;
+	}
+};
+
+export const userOrdersReducer = (state = { loading: true }, action) => {
+	switch (action.type) {
+		case USER_ORDERS_REQUEST:
+			return { loading: true };
+		case USER_ORDERS_SUCCESS:
+			return {
+				loading: false,
+				fetched: true,
+				orders: action.payload.userOrders,
+				pages: action.payload.pages,
+			};
+		case USER_ORDERS_FAIL:
+			return {
+				loading: false,
+				fetched: false,
+				error: action.payload,
 			};
 		default:
 			return state;

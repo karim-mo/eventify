@@ -4,10 +4,15 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import {
 	eventListReducer,
 	eventDetailsReducer,
+	userEventsReducer,
 } from './reducers/eventsReducer';
 import { userInfoReducer } from './reducers/userReducer';
 import { userConfirmationReducer } from './reducers/confirmationReducer';
-import { orderDetailsReducer, ordersReducer } from './reducers/ordersReducer';
+import {
+	orderDetailsReducer,
+	ordersReducer,
+	userOrdersReducer,
+} from './reducers/ordersReducer';
 
 const reducer = combineReducers({
 	eventList: eventListReducer,
@@ -16,6 +21,8 @@ const reducer = combineReducers({
 	userConfirmation: userConfirmationReducer,
 	ordersInfo: ordersReducer,
 	orderDetails: orderDetailsReducer,
+	userOrders: userOrdersReducer,
+	userEvents: userEventsReducer,
 });
 
 const getUserInfo = () => {

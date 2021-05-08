@@ -139,12 +139,19 @@ export const getCart = () => async (dispatch, getState) => {
 			})
 		);
 	} catch (e) {
+		const message =
+			e.response && e.response.data.message
+				? e.response.data.message
+				: e.message;
+		if (
+			message === 'Not authorized, token failed' ||
+			message === 'Not authorized, no token'
+		) {
+			dispatch(logoutUser());
+		}
 		dispatch({
 			type: USER_CART_FAIL,
-			payload:
-				e.response && e.response.data.message
-					? e.response.data.message
-					: e.message,
+			payload: message,
 		});
 	}
 };
@@ -191,12 +198,19 @@ export const addToCart = (eventID) => async (dispatch, getState) => {
 			type: USER_CART_RESET,
 		});
 	} catch (e) {
+		const message =
+			e.response && e.response.data.message
+				? e.response.data.message
+				: e.message;
+		if (
+			message === 'Not authorized, token failed' ||
+			message === 'Not authorized, no token'
+		) {
+			dispatch(logoutUser());
+		}
 		dispatch({
 			type: USER_CART_ADD_FAIL,
-			payload:
-				e.response && e.response.data.message
-					? e.response.data.message
-					: e.message,
+			payload: message,
 		});
 	}
 };
@@ -240,12 +254,19 @@ export const removeFromCart = (eventID) => async (dispatch, getState) => {
 			type: USER_CART_RESET,
 		});
 	} catch (e) {
+		const message =
+			e.response && e.response.data.message
+				? e.response.data.message
+				: e.message;
+		if (
+			message === 'Not authorized, token failed' ||
+			message === 'Not authorized, no token'
+		) {
+			dispatch(logoutUser());
+		}
 		dispatch({
 			type: USER_CART_REMOVE_FAIL,
-			payload:
-				e.response && e.response.data.message
-					? e.response.data.message
-					: e.message,
+			payload: message,
 		});
 	}
 };

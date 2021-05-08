@@ -7,16 +7,19 @@ import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 import Zoom from '@material-ui/core/Zoom';
 import Fade from '@material-ui/core/Fade';
+import Paginate from '../components/Paginate';
 
-const EventScreen = () => {
+const EventScreen = ({ match }) => {
 	const dispatch = useDispatch();
 
 	const eventList = useSelector((state) => state.eventList);
-	const { loading, success, error, events } = eventList;
+	const { loading, success, error, events, pages } = eventList;
+
+	const pageNo = match.params.pageNo || 1;
 
 	useEffect(() => {
-		dispatch(listEvents());
-	}, []);
+		dispatch(listEvents(pageNo));
+	}, [dispatch, pageNo]);
 
 	return (
 		<>
@@ -33,21 +36,24 @@ const EventScreen = () => {
 				) : !success ? (
 					<ErrorMessage variant='danger'>{error}</ErrorMessage>
 				) : (
-					<Row className='mt-4'>
-						{events.map((event, index) => (
-							<Fade
-								key={event._id}
-								in={true}
-								style={{
-									transitionDelay: `${index * 150}ms`,
-								}}
-							>
-								<Col sm={12} md={4}>
-									<Event event={event} />
-								</Col>
-							</Fade>
-						))}
-					</Row>
+					<>
+						<Row className='mt-4'>
+							{events.map((event, index) => (
+								<Fade
+									key={event._id}
+									in={true}
+									style={{
+										transitionDelay: `${index * 150}ms`,
+									}}
+								>
+									<Col sm={12} md={4}>
+										<Event event={event} />
+									</Col>
+								</Fade>
+							))}
+						</Row>
+						<Paginate pages={pages} page={pageNo} />
+					</>
 				)}
 			</Container>
 		</>

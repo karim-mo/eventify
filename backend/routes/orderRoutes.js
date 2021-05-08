@@ -63,8 +63,29 @@ const revertEventTickets = async (orderID) => {
 const buyTicketsForOrder = (orderID) => {};
 
 const getUserOrders = asyncHandler(async (req, res) => {
-	try {
-	} catch (error) {}
+	const ordersPerPage = 12;
+	const pageNo = Number(req.query.pageNo) || 1;
+
+	const userOrdersCount = await Order.countDocuments({
+		userID: req.user._id,
+	});
+
+	if (userOrdersCount) {
+		const pages = Math.ceil(userOrdersCount / ordersPerPage);
+		if (pages < pageNo) {
+			res.status(404);
+			throw new Error('No orders to show');
+		}
+		const userOrders = await Order.find({ userID: req.user._id })
+			.limit(ordersPerPage)
+			.skip(ordersPerPage * (pageNo - 1))
+			.sort({ createdAt: -1 });
+
+		res.json({ userOrders, pages });
+	} else {
+		res.status(404);
+		throw new Error(`You don't have any orders.`);
+	}
 });
 
 const createOrder = asyncHandler(async (req, res) => {

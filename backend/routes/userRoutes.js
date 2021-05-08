@@ -26,6 +26,7 @@ const login = asyncHandler(async (req, res) => {
 				name: user.name,
 				country: user.country,
 				cart: user.cart,
+				joinedOn: user.createdAt,
 				token: jwt.sign({ id: user._id }, process.env.JWT_KEY, {
 					expiresIn: '1d',
 				}),
@@ -53,6 +54,7 @@ const register = asyncHandler(async (req, res) => {
 			email: user.email,
 			country: user.country,
 			cart: user.cart,
+			joinedOn: user.createdAt,
 			token: jwt.sign({ id: user._id }, process.env.JWT_KEY, {
 				expiresIn: '1d',
 			}),
