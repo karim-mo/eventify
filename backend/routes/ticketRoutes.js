@@ -17,7 +17,7 @@ const getPublicTicketDetails = asyncHandler(async (req, res) => {
 
 const getUserTickets = asyncHandler(async (req, res) => {
 	const user = req.user;
-	const ticketsPerPage = 1;
+	const ticketsPerPage = 10;
 	const pageNo = Number(req.query.pageNo) || 1;
 
 	const ticketsCount = await Ticket.countDocuments({ userID: user._id });
