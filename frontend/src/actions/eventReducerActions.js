@@ -1,5 +1,11 @@
 import axios from 'axios';
 import {
+	COMMENT_ADD_FAIL,
+	COMMENT_ADD_REQUEST,
+	COMMENT_ADD_SUCCESS,
+	COMMENT_TOGGLE_HEART_FAIL,
+	COMMENT_TOGGLE_HEART_REQUEST,
+	COMMENT_TOGGLE_HEART_SUCCESS,
 	EVENT_DETAILS_FAIL,
 	EVENT_DETAILS_REQUEST,
 	EVENT_DETAILS_SUCCESS,
@@ -97,6 +103,159 @@ export const getUserHostedEvents = (pageNo) => async (dispatch, getState) => {
 		}
 		dispatch({
 			type: USER_EVENTS_FAIL,
+			payload: message,
+		});
+	}
+};
+
+export const addUserComment = (id, comment) => async (dispatch, getState) => {
+	try {
+		dispatch({
+			type: COMMENT_ADD_REQUEST,
+		});
+
+		const {
+			eventDetails: { event },
+		} = getState();
+
+		const {
+			userInfo: { user },
+		} = getState();
+
+		const newComment = {
+			_id: 'TEMP_ID',
+			user: user.name,
+			userID: user.id,
+			comment,
+			hearts: 0,
+			heartedBy: [],
+		};
+
+		event.comments.push(newComment);
+
+		dispatch({
+			type: COMMENT_ADD_SUCCESS,
+			payload: event,
+		});
+
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${user.token}`,
+			},
+		};
+
+		const { data } = await axios.put(
+			`/v3/events/${id}`,
+			{ comment },
+			config
+		);
+
+		dispatch({
+			type: COMMENT_ADD_SUCCESS,
+			payload: data,
+		});
+	} catch (e) {
+		const message =
+			e.response && e.response.data.message
+				? e.response.data.message
+				: e.message;
+		if (
+			message === 'Not authorized, token failed' ||
+			message === 'Not authorized, no token'
+		) {
+			dispatch(logoutUser());
+		}
+		dispatch({
+			type: COMMENT_ADD_FAIL,
+			payload: message,
+		});
+	}
+};
+
+export const toggleCommentHeart = (id, commentID) => async (
+	dispatch,
+	getState
+) => {
+	try {
+		dispatch({
+			type: COMMENT_TOGGLE_HEART_REQUEST,
+		});
+
+		const {
+			eventDetails: { event },
+		} = getState();
+
+		const {
+			userInfo: { user },
+		} = getState();
+
+		const editedComment = event.comments.find(
+			(comment) => comment._id.toString() === commentID.toString()
+		);
+		if (editedComment) {
+			if (
+				editedComment.heartedBy.find(
+					(_user) => _user.userID.toString() === user.id.toString()
+				)
+			) {
+				editedComment.heartedBy.forEach((_user, index) => {
+					if (_user.userID.toString() === user.id.toString()) {
+						editedComment.heartedBy.splice(index);
+						editedComment.hearts -= 1;
+					}
+				});
+			} else {
+				editedComment.hearts += 1;
+				const newHeartUser = {
+					userID: user.id,
+				};
+				editedComment.heartedBy.push(newHeartUser);
+			}
+		}
+
+		event.comments.map((comment) => {
+			if (comment._id.toString() === commentID.toString()) {
+				return editedComment;
+			}
+			return comment;
+		});
+
+		dispatch({
+			type: COMMENT_TOGGLE_HEART_SUCCESS,
+			payload: event,
+		});
+
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${user.token}`,
+			},
+		};
+
+		const { data } = await axios.post(
+			`/v3/events/${id}`,
+			{ commentID },
+			config
+		);
+
+		dispatch({
+			type: COMMENT_TOGGLE_HEART_SUCCESS,
+			payload: data,
+		});
+	} catch (e) {
+		const message =
+			e.response && e.response.data.message
+				? e.response.data.message
+				: e.message;
+		if (
+			message === 'Not authorized, token failed' ||
+			message === 'Not authorized, no token'
+		) {
+			dispatch(logoutUser());
+		}
+		dispatch({
+			type: COMMENT_TOGGLE_HEART_FAIL,
 			payload: message,
 		});
 	}

@@ -27,6 +27,95 @@ const getEvents = asyncHandler(async (req, res) => {
 	}
 });
 
+const addUserComment = asyncHandler(async (req, res) => {
+	const user = req.user;
+	const { comment } = req.body;
+	if (comment && comment.length > 0 && comment.length <= 200) {
+		const newComment = {
+			user: user.name,
+			userID: user._id,
+			comment: comment,
+			hearts: 0,
+		};
+		const event = await Event.findById(req.params.id);
+		if (event) {
+			if (
+				!event.joinedUsers.find(
+					(joinedUser) =>
+						joinedUser.userID.toString() === user._id.toString()
+				)
+			) {
+				res.status(401);
+				throw new Error(
+					'Cannot react to a comment for an event you are not joined.'
+				);
+			}
+			event.comments.push(newComment);
+			await event.save();
+			res.json(event);
+		} else {
+			res.status(404);
+			throw new Error('Event not found');
+		}
+	} else {
+		res.status(400);
+		throw new Error('Invalid Comment');
+	}
+});
+
+const toggleCommentHeart = asyncHandler(async (req, res) => {
+	const user = req.user;
+	const { commentID } = req.body;
+	const event = await Event.findById(req.params.id);
+	if (event) {
+		if (
+			!event.joinedUsers.find(
+				(joinedUser) =>
+					joinedUser.userID.toString() === user._id.toString()
+			)
+		) {
+			res.status(401);
+			throw new Error(
+				'Cannot react to a comment for an event you are not joined.'
+			);
+		}
+		const _comment = event.comments.find(
+			(comment) => comment._id.toString() === commentID.toString()
+		);
+		if (_comment) {
+			let hearted = false;
+			_comment.heartedBy.forEach((_user, index) => {
+				if (_user.userID.toString() === user._id.toString()) {
+					_comment.heartedBy.splice(index);
+					_comment.hearts -= 1;
+					hearted = true;
+				}
+			});
+			if (!hearted) {
+				_comment.hearts += 1;
+				const newHeartUser = {
+					userID: user._id,
+				};
+				_comment.heartedBy.push(newHeartUser);
+			}
+			event.comments.map((comment) => {
+				if (comment._id.toString() === commentID.toString()) {
+					return _comment;
+				}
+				return comment;
+			});
+			await event.save();
+			res.json(event);
+		} else {
+			res.status(404);
+			throw new Error('Comment not found.');
+		}
+	} else {
+		res.status(404);
+		throw new Error('Event not found');
+	}
+});
+
 const getEvent = asyncHandler(async (req, res) => {
 	const event = await Event.findById(req.params.id);
 	if (event) {
@@ -38,7 +127,6 @@ const getEvent = asyncHandler(async (req, res) => {
 });
 
 const getUserHostedEvents = asyncHandler(async (req, res) => {
-	console.log('here0');
 	const eventsPerPage = 10;
 	const pageNo = Number(req.query.pageNo) || 1;
 
@@ -64,6 +152,10 @@ const getUserHostedEvents = asyncHandler(async (req, res) => {
 
 router.route('/').get(getEvents);
 router.route('/userevents').get(protect, getUserHostedEvents);
-router.route('/:id').get(getEvent);
+router
+	.route('/:id')
+	.get(getEvent)
+	.put(protect, addUserComment)
+	.post(protect, toggleCommentHeart);
 
 export default router;

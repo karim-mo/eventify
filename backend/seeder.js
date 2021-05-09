@@ -115,5 +115,5 @@ const addToUserModel = async () => {
 if (process.argv[2] === '-d') {
 	destroyData();
 } else {
-	addToUserModel();
+	importData();
 }

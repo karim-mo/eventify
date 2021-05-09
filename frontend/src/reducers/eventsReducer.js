@@ -1,4 +1,11 @@
 import {
+	COMMENT_ADD_FAIL,
+	COMMENT_ADD_REQUEST,
+	COMMENT_ADD_SUCCESS,
+	COMMENT_ERROR_RESET,
+	COMMENT_TOGGLE_HEART_FAIL,
+	COMMENT_TOGGLE_HEART_REQUEST,
+	COMMENT_TOGGLE_HEART_SUCCESS,
 	EVENT_DETAILS_FAIL,
 	EVENT_DETAILS_REQUEST,
 	EVENT_DETAILS_SUCCESS,
@@ -47,9 +54,52 @@ export const eventDetailsReducer = (
 		case EVENT_DETAILS_REQUEST:
 			return { ...state, loading: true };
 		case EVENT_DETAILS_SUCCESS:
-			return { loading: false, success: true, event: action.payload };
+			return {
+				loading: false,
+				success: true,
+				event: action.payload,
+			};
 		case EVENT_DETAILS_FAIL:
-			return { loading: false, success: false, error: action.payload };
+			return {
+				loading: false,
+				success: false,
+				error: action.payload,
+			};
+		case COMMENT_ADD_REQUEST:
+			return { ...state };
+		case COMMENT_ADD_SUCCESS:
+			return {
+				loading: false,
+				success: true,
+				event: action.payload,
+			};
+		case COMMENT_ADD_FAIL:
+			return {
+				...state,
+				loading: false,
+				success: false,
+				commentError: action.payload,
+			};
+		case COMMENT_ERROR_RESET:
+			return {
+				...state,
+				commentError: null,
+			};
+		case COMMENT_TOGGLE_HEART_REQUEST:
+			return { ...state };
+		case COMMENT_TOGGLE_HEART_SUCCESS:
+			return {
+				loading: false,
+				success: true,
+				event: action.payload,
+			};
+		case COMMENT_TOGGLE_HEART_FAIL:
+			return {
+				...state,
+				loading: false,
+				success: false,
+				heartError: action.payload,
+			};
 		default:
 			return state;
 	}

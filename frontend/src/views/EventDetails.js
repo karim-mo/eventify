@@ -3,7 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { Button, Col, Container, Image, ListGroup, Row } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { getEventDetails } from '../actions/eventReducerActions';
+import {
+	addUserComment,
+	getEventDetails,
+	toggleCommentHeart,
+} from '../actions/eventReducerActions';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 import { addToCart } from '../actions/userReducerActions';
@@ -14,6 +18,9 @@ const EventDetails = ({ match }) => {
 	const [successMessage, setsuccessMessage] = useState(null);
 	const [open, setOpen] = useState(false);
 	const [errorSnackOpen, setErrorSnackOpen] = useState(false);
+	const [commentErrorSnackOpen, setCommentErrorSnackOpen] = useState(false);
+	const [commentErrorText, setCommentErrorText] = useState(null);
+	const [commentText, setCommentText] = useState('');
 
 	const eventEnded = (day, month, year) => {
 		const today = new Date();
@@ -39,9 +46,15 @@ const EventDetails = ({ match }) => {
 		}
 	}, [open]);
 
+	useEffect(() => {
+		if (commentErrorSnackOpen) {
+			setTimeout(() => setCommentErrorSnackOpen(false), 3000);
+		}
+	}, [commentErrorSnackOpen]);
+
 	const dispatch = useDispatch();
 	const eventDetails = useSelector((state) => state.eventDetails);
-	const { loading, success, error, event } = eventDetails;
+	const { loading, success, error, event, commentError } = eventDetails;
 
 	const userInfo = useSelector((state) => state.userInfo);
 	const {
@@ -49,6 +62,7 @@ const EventDetails = ({ match }) => {
 		error: cartError,
 		addToCartSuccess: cartSuccess,
 		isLogged,
+		user,
 	} = userInfo;
 
 	useEffect(() => {
@@ -67,6 +81,16 @@ const EventDetails = ({ match }) => {
 		}
 	}, [dispatch, cartSuccess]);
 
+	useEffect(() => {
+		if (commentError) {
+			setOpen(false);
+			setErrorSnackOpen(false);
+			setCommentErrorText(commentError);
+			setCommentErrorSnackOpen(true);
+			dispatch({ type: 'COMMENT_ERROR_RESET' });
+		}
+	}, [dispatch, commentError]);
+
 	const addToCartHandler = (id) => {
 		dispatch(addToCart(id));
 	};
@@ -74,6 +98,51 @@ const EventDetails = ({ match }) => {
 	useEffect(() => {
 		dispatch(getEventDetails(match.params.id));
 	}, [match]);
+
+	const addCommentHandler = () => {
+		if (commentText !== '') {
+			dispatch(addUserComment(match.params.id, commentText));
+			setCommentText('');
+		} else {
+			setErrorSnackOpen(false);
+			setOpen(false);
+			setCommentErrorText('Comment cannot be empty.');
+			setCommentErrorSnackOpen(true);
+		}
+	};
+
+	const isHeartedByUser = (commentID) => {
+		if (!isLogged || !canComment()) return true;
+		const comment = event.comments.find(
+			(_comment) => _comment._id.toString() === commentID.toString()
+		);
+		if (comment) {
+			if (
+				comment.heartedBy.find(
+					(_user) => _user.userID.toString() === user.id.toString()
+				)
+			)
+				return true;
+		}
+		return false;
+	};
+
+	const canComment = () => {
+		if (
+			isLogged &&
+			event.joinedUsers.find(
+				(joinedUser) =>
+					joinedUser.userID.toString() === user.id.toString()
+			)
+		)
+			return true;
+		return false;
+	};
+
+	const toggleCommentHeartHandler = (commentID) => {
+		if (!isLogged || !canComment()) return;
+		dispatch(toggleCommentHeart(match.params.id, commentID));
+	};
 
 	return (
 		<div>
@@ -83,6 +152,13 @@ const EventDetails = ({ match }) => {
 						<a>GO BACK</a>
 					</LinkContainer>
 				</div>
+				{commentErrorSnackOpen && (
+					<Snackbar
+						open={commentErrorSnackOpen}
+						variant='error'
+						message={commentErrorText}
+					/>
+				)}
 				{errorSnackOpen && (
 					<Snackbar
 						open={errorSnackOpen}
@@ -99,7 +175,7 @@ const EventDetails = ({ match }) => {
 				)}
 				{loading ? (
 					<Loading />
-				) : !success ? (
+				) : error ? (
 					<ErrorMessage variant='danger'>{error}</ErrorMessage>
 				) : (
 					<>
@@ -278,7 +354,7 @@ const EventDetails = ({ match }) => {
 						<br />
 						<br />
 
-						{event.comments.length > 0 ? (
+						{event.comments.length > 0 || canComment() ? (
 							<Row>
 								<Col sm={12}>
 									<h1
@@ -290,11 +366,14 @@ const EventDetails = ({ match }) => {
 										User Comments
 									</h1>
 									<br />
-									<ListGroup variant='flush'>
-										{event.comments.map((comment) => (
-											<ListGroup.Item key={comment._id}>
+									{canComment() && (
+										<ListGroup className='mb-3'>
+											<ListGroup.Item>
 												<Row>
-													<Col sm={1}>
+													<Col
+														sm={1}
+														className='mt-2'
+													>
 														<Image
 															src='/images/avatar.png'
 															fluid
@@ -308,27 +387,107 @@ const EventDetails = ({ match }) => {
 															marginLeft: '-3%',
 														}}
 													>
-														<p
+														<textarea
 															style={{
-																margin: '0',
-																marginTop:
-																	'-1%',
-																textDecoration:
-																	'underline',
+																width: '100%',
+																maxHeight:
+																	'100px',
+																minHeight:
+																	'40px',
+																resize: 'none',
 															}}
-														>
-															{comment.user}
-														</p>
-														<p>{comment.comment}</p>
+															maxLength='200'
+															placeholder='Add a comment...'
+															value={commentText}
+															onChange={(e) =>
+																setCommentText(
+																	e.target
+																		.value
+																)
+															}
+														></textarea>
 													</Col>
-													<Col className='text-right'>
-														{comment.hearts}{' '}
-														<i className='fas fa-heart'></i>
+													<Col className='text-right mt-2'>
+														<Button
+															onClick={
+																addCommentHandler
+															}
+														>
+															Comment
+														</Button>
 													</Col>
 												</Row>
 											</ListGroup.Item>
-										))}
-									</ListGroup>
+										</ListGroup>
+									)}
+									{event.comments.length > 0 && (
+										<ListGroup variant='flush'>
+											{event.comments.map((comment) => (
+												<ListGroup.Item
+													key={comment._id}
+												>
+													<Row>
+														<Col sm={1}>
+															<Image
+																src='/images/avatar.png'
+																fluid
+																rounded
+																width='50%'
+															></Image>
+														</Col>
+														<Col
+															sm={10}
+															style={{
+																marginLeft:
+																	'-3%',
+															}}
+														>
+															<p
+																style={{
+																	margin: '0',
+																	marginTop:
+																		'-1%',
+																	textDecoration:
+																		'underline',
+																}}
+															>
+																{comment.user}
+															</p>
+															<p>
+																{
+																	comment.comment
+																}
+															</p>
+														</Col>
+														<Col className='text-right'>
+															{comment.hearts}{' '}
+															{isHeartedByUser(
+																comment._id
+															) ? (
+																<i
+																	onClick={() =>
+																		toggleCommentHeartHandler(
+																			comment._id
+																		)
+																	}
+																	className='fas fa-heart'
+																></i>
+															) : (
+																<i
+																	onClick={() =>
+																		toggleCommentHeartHandler(
+																			comment._id
+																		)
+																	}
+																	className='fas fa-heart-broken'
+																></i>
+															)}
+														</Col>
+													</Row>
+												</ListGroup.Item>
+											))}
+										</ListGroup>
+									)}
 								</Col>
 							</Row>
 						) : null}

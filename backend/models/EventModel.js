@@ -6,6 +6,19 @@ const eventCountrySchema = mongoose.Schema({
 	countryCode: { type: String, required: true },
 });
 
+const heartedBySchema = mongoose.Schema(
+	{
+		userID: {
+			type: mongoose.Schema.Types.ObjectId,
+			required: true,
+			ref: 'User',
+		},
+	},
+	{
+		timestamps: true,
+	}
+);
+
 const commentSchema = mongoose.Schema(
 	{
 		user: { type: String, required: true },
@@ -16,6 +29,7 @@ const commentSchema = mongoose.Schema(
 		},
 		comment: { type: String, required: true },
 		hearts: { type: Number, required: true },
+		heartedBy: [heartedBySchema],
 	},
 	{
 		timestamps: true,
