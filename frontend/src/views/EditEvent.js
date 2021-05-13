@@ -121,7 +121,8 @@ const EditEvent = ({ match, history }) => {
 		setEventCountry(updatedCountries);
 	};
 
-	const EditEventHandler = () => {
+	const EditEventHandler = (e) => {
+		e.preventDefault();
 		if (
 			!name ||
 			!image ||
@@ -170,7 +171,7 @@ const EditEvent = ({ match, history }) => {
 						<Row className='justify-content-md-center'>
 							<Col xs={12} md={6}>
 								<h1>Event Details</h1>
-								<Form onSubmit={EditEventHandler}>
+								<Form onSubmit={(e) => EditEventHandler(e)}>
 									<Form.Group controlId='name'>
 										<Form.Label>Name</Form.Label>
 										<Form.Control
@@ -283,10 +284,12 @@ const EditEvent = ({ match, history }) => {
 													let i = 0;
 													while (
 														eventCountry.find(
-															(cc) => cc.countryCode === options[i++].value
+															(cc) => cc.countryCode === options[i].value
 														)
-													);
-													cc = options[--i].value;
+													) {
+														i++;
+													}
+													cc = options[i].value;
 													setEventCountry([...eventCountry, { countryCode: cc }]);
 												}}
 												style={{ width: '100%' }}

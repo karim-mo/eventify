@@ -5,6 +5,7 @@ import {
 	eventListReducer,
 	eventDetailsReducer,
 	userEventsReducer,
+	adminNewEventReducer,
 } from './reducers/eventsReducer';
 import { userInfoReducer } from './reducers/userReducer';
 import { userConfirmationReducer } from './reducers/confirmationReducer';
@@ -33,23 +34,18 @@ const reducer = combineReducers({
 	ticketDetails: ticketDetailsReducer,
 	publicTicketDetails: publicTicketDetailsReducer,
 	adminOrders: adminOrdersReducer,
+	adminNewEvent: adminNewEventReducer,
 });
 
 const getUserInfo = () => {
-	return localStorage.getItem('userInfo')
-		? JSON.parse(localStorage.getItem('userInfo'))
-		: null;
+	return localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
 };
 
 const initalState = {
 	userInfo: { user: getUserInfo(), isLogged: getUserInfo() ? true : false },
 };
 
-const store = createStore(
-	reducer,
-	initalState,
-	composeWithDevTools(applyMiddleware(thunk))
-);
+const store = createStore(reducer, initalState, composeWithDevTools(applyMiddleware(thunk)));
 
 export default store;
 

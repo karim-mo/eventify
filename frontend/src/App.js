@@ -16,6 +16,7 @@ import Ticket from './views/Ticket';
 import TicketerPage from './views/TicketerPage';
 import AdminPage from './views/AdminPage';
 import EditEvent from './views/EditEvent';
+import AddEvent from './views/AddEvent';
 
 const App = () => {
 	return (
@@ -39,7 +40,7 @@ const App = () => {
 				<PrivateRoute path='/dashboard' exact component={AdminPage} />
 				<PrivateRoute path='/dashboard/:key' exact component={AdminPage} />
 				<PrivateRoute path='/dashboard/:key/page/:pageNo' exact component={AdminPage} />
-				<PrivateRoute path='/dashboard/new/create-event' exact component={HomeScreen} />
+				<PrivateRoute path='/dashboard/new/create-event' exact component={AddEvent} />
 				<PrivateRoute path='/dashboard/editevent/:id' exact component={EditEvent} />
 			</main>
 			<Footer />

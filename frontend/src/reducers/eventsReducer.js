@@ -15,6 +15,10 @@ import {
 	USER_EVENTS_FAIL,
 	USER_EVENTS_REQUEST,
 	USER_EVENTS_SUCCESS,
+	ADMIN_NEW_EVENT_REQUEST,
+	ADMIN_NEW_EVENT_SUCCESS,
+	ADMIN_NEW_EVENT_FAIL,
+	ADMIN_NEW_EVENT_RESET,
 } from '../types';
 
 export const eventListReducer = (state = { events: [], loading: true }, action) => {
@@ -119,6 +123,32 @@ export const userEventsReducer = (state = { loading: true }, action) => {
 				fetched: false,
 				error: action.payload,
 			};
+		default:
+			return state;
+	}
+};
+
+export const adminNewEventReducer = (state = { loading: false }, action) => {
+	switch (action.type) {
+		case ADMIN_NEW_EVENT_REQUEST:
+			return { loading: true };
+		case ADMIN_NEW_EVENT_SUCCESS:
+			return {
+				loading: false,
+				created: true,
+				createdEvent: action.payload,
+			};
+		case ADMIN_NEW_EVENT_FAIL:
+			return {
+				loading: false,
+				created: false,
+				error: action.payload,
+			};
+		case ADMIN_NEW_EVENT_RESET:
+			return {
+				loading: false,
+			};
+
 		default:
 			return state;
 	}

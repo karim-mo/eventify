@@ -1,5 +1,9 @@
 import axios from 'axios';
 import {
+	ADMIN_NEW_EVENT_FAIL,
+	ADMIN_NEW_EVENT_REQUEST,
+	ADMIN_NEW_EVENT_RESET,
+	ADMIN_NEW_EVENT_SUCCESS,
 	COMMENT_ADD_FAIL,
 	COMMENT_ADD_REQUEST,
 	COMMENT_ADD_SUCCESS,
@@ -302,6 +306,62 @@ export const editEventbyID = (event) => async (dispatch, getState) => {
 		}
 		dispatch({
 			type: EVENT_DETAILS_FAIL,
+			payload: message,
+		});
+	}
+};
+
+export const addNewEvent = (event) => async (dispatch, getState) => {
+	try {
+		dispatch({
+			type: ADMIN_NEW_EVENT_REQUEST,
+		});
+
+		const {
+			userInfo: { user },
+		} = getState();
+
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${user.token}`,
+			},
+		};
+
+		const { data } = await axios.put(
+			`/v3/events`,
+			{
+				virtual: event.virtual,
+				authorEmail: event.authorEmail,
+				name: event.name,
+				image: event.image,
+				description: event.description,
+				category: event.category,
+				ticketPrice: event.ticketPrice,
+				availableTickets: event.availableTickets,
+				eventCountry: event.eventCountry,
+				endsOnYear: event.endsOnYear,
+				endsOnMonth: event.endsOnMonth,
+				endsOnDay: event.endsOnDay,
+			},
+			config
+		);
+
+		dispatch({
+			type: ADMIN_NEW_EVENT_SUCCESS,
+			payload: data,
+		});
+
+		dispatch({
+			type: ADMIN_NEW_EVENT_RESET,
+		});
+	} catch (e) {
+		const message = e.response && e.response.data.message ? e.response.data.message : e.message;
+		if (message === 'Not authorized, token failed' || message === 'Not authorized, no token') {
+			dispatch(logoutUser());
+		}
+		dispatch({
+			type: ADMIN_NEW_EVENT_FAIL,
 			payload: message,
 		});
 	}

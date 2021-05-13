@@ -2,6 +2,7 @@ import express from 'express';
 import asyncHandler from 'express-async-handler';
 import { admin, protect } from '../middleware/auth.js';
 import Event from '../models/EventModel.js';
+import User from '../models/UserModel.js';
 
 const router = express.Router();
 
@@ -186,7 +187,7 @@ const addNewEvent = asyncHandler(async (req, res) => {
 
 		const created = await Event.create(newEvent);
 		if (created) {
-			res.json({});
+			res.json({ id: created._id });
 		} else {
 			res.status(400);
 			throw new Error('Failed to create event');
