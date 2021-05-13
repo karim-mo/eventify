@@ -1,6 +1,6 @@
 import express from 'express';
 import asyncHandler from 'express-async-handler';
-import { protect } from '../middleware/auth.js';
+import { admin, protect } from '../middleware/auth.js';
 import User from '../models/UserModel.js';
 import Event from '../models/EventModel.js';
 import jwt from 'jsonwebtoken';
@@ -133,7 +133,12 @@ const reconfirmation = asyncHandler(async (req, res) => {
 	}
 });
 
+const allowAdmin = asyncHandler(async (req, res) => {
+	res.json({});
+});
+
 router.route('/auth').post(login).put(register);
 router.route('/confirm').put(confirmation).post(reconfirmation);
+router.route('/checkadmin').post(protect, admin, allowAdmin);
 
 export default router;

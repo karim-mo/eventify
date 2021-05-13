@@ -33,10 +33,7 @@ export const listEvents = (pageNo) => async (dispatch, getState) => {
 	} catch (e) {
 		dispatch({
 			type: EVENT_LIST_FAIL,
-			payload:
-				e.response && e.response.data.message
-					? e.response.data.message
-					: e.message,
+			payload: e.response && e.response.data.message ? e.response.data.message : e.message,
 		});
 	}
 };
@@ -56,10 +53,7 @@ export const getEventDetails = (id) => async (dispatch, getState) => {
 	} catch (e) {
 		dispatch({
 			type: EVENT_DETAILS_FAIL,
-			payload:
-				e.response && e.response.data.message
-					? e.response.data.message
-					: e.message,
+			payload: e.response && e.response.data.message ? e.response.data.message : e.message,
 		});
 	}
 };
@@ -81,24 +75,15 @@ export const getUserHostedEvents = (pageNo) => async (dispatch, getState) => {
 			},
 		};
 
-		const { data } = await axios.get(
-			`/v3/events/userevents?pageNo=${pageNo}`,
-			config
-		);
+		const { data } = await axios.get(`/v3/events/userevents?pageNo=${pageNo}`, config);
 
 		dispatch({
 			type: USER_EVENTS_SUCCESS,
 			payload: data,
 		});
 	} catch (e) {
-		const message =
-			e.response && e.response.data.message
-				? e.response.data.message
-				: e.message;
-		if (
-			message === 'Not authorized, token failed' ||
-			message === 'Not authorized, no token'
-		) {
+		const message = e.response && e.response.data.message ? e.response.data.message : e.message;
+		if (message === 'Not authorized, token failed' || message === 'Not authorized, no token') {
 			dispatch(logoutUser());
 		}
 		dispatch({
@@ -145,25 +130,15 @@ export const addUserComment = (id, comment) => async (dispatch, getState) => {
 			},
 		};
 
-		const { data } = await axios.put(
-			`/v3/events/${id}`,
-			{ comment },
-			config
-		);
+		const { data } = await axios.put(`/v3/events/${id}`, { comment }, config);
 
 		dispatch({
 			type: COMMENT_ADD_SUCCESS,
 			payload: data,
 		});
 	} catch (e) {
-		const message =
-			e.response && e.response.data.message
-				? e.response.data.message
-				: e.message;
-		if (
-			message === 'Not authorized, token failed' ||
-			message === 'Not authorized, no token'
-		) {
+		const message = e.response && e.response.data.message ? e.response.data.message : e.message;
+		if (message === 'Not authorized, token failed' || message === 'Not authorized, no token') {
 			dispatch(logoutUser());
 		}
 		dispatch({
@@ -173,10 +148,7 @@ export const addUserComment = (id, comment) => async (dispatch, getState) => {
 	}
 };
 
-export const toggleCommentHeart = (id, commentID) => async (
-	dispatch,
-	getState
-) => {
+export const toggleCommentHeart = (id, commentID) => async (dispatch, getState) => {
 	try {
 		dispatch({
 			type: COMMENT_TOGGLE_HEART_REQUEST,
@@ -194,11 +166,7 @@ export const toggleCommentHeart = (id, commentID) => async (
 			(comment) => comment._id.toString() === commentID.toString()
 		);
 		if (editedComment) {
-			if (
-				editedComment.heartedBy.find(
-					(_user) => _user.userID.toString() === user.id.toString()
-				)
-			) {
+			if (editedComment.heartedBy.find((_user) => _user.userID.toString() === user.id.toString())) {
 				editedComment.heartedBy.forEach((_user, index) => {
 					if (_user.userID.toString() === user.id.toString()) {
 						editedComment.heartedBy.splice(index);
@@ -233,29 +201,107 @@ export const toggleCommentHeart = (id, commentID) => async (
 			},
 		};
 
-		const { data } = await axios.post(
-			`/v3/events/${id}`,
-			{ commentID },
-			config
-		);
+		const { data } = await axios.post(`/v3/events/${id}`, { commentID }, config);
 
 		dispatch({
 			type: COMMENT_TOGGLE_HEART_SUCCESS,
 			payload: data,
 		});
 	} catch (e) {
-		const message =
-			e.response && e.response.data.message
-				? e.response.data.message
-				: e.message;
-		if (
-			message === 'Not authorized, token failed' ||
-			message === 'Not authorized, no token'
-		) {
+		const message = e.response && e.response.data.message ? e.response.data.message : e.message;
+		if (message === 'Not authorized, token failed' || message === 'Not authorized, no token') {
 			dispatch(logoutUser());
 		}
 		dispatch({
 			type: COMMENT_TOGGLE_HEART_FAIL,
+			payload: message,
+		});
+	}
+};
+
+export const deleteEvent = (eventID) => async (dispatch, getState) => {
+	try {
+		const {
+			eventList: { events, pages },
+		} = getState();
+
+		const {
+			userInfo: { user },
+		} = getState();
+
+		dispatch({
+			type: EVENT_LIST_SUCCESS,
+			payload: {
+				pages: pages,
+				events: events.filter((event) => event._id.toString() !== eventID.toString()),
+			},
+		});
+
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${user.token}`,
+			},
+		};
+
+		await axios.delete(`/v3/events/${eventID}`, config);
+	} catch (e) {
+		const message = e.response && e.response.data.message ? e.response.data.message : e.message;
+		if (message === 'Not authorized, token failed' || message === 'Not authorized, no token') {
+			dispatch(logoutUser());
+		}
+		dispatch({
+			type: EVENT_LIST_FAIL,
+			payload: message,
+		});
+	}
+};
+
+export const editEventbyID = (event) => async (dispatch, getState) => {
+	try {
+		dispatch({
+			type: EVENT_DETAILS_REQUEST,
+		});
+		const {
+			userInfo: { user },
+		} = getState();
+
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${user.token}`,
+			},
+		};
+
+		const { data } = await axios.post(
+			`/v3/events`,
+			{
+				eventID: event.eventID,
+				name: event.name,
+				image: event.image,
+				description: event.description,
+				category: event.category,
+				ticketPrice: event.ticketPrice,
+				availableTickets: event.availableTickets,
+				eventCountry: event.eventCountry,
+				endsOnYear: event.endsOnYear,
+				endsOnMonth: event.endsOnMonth,
+				endsOnDay: event.endsOnDay,
+			},
+			config
+		);
+
+		dispatch({
+			type: EVENT_DETAILS_SUCCESS,
+			payload: data,
+		});
+	} catch (e) {
+		const message = e.response && e.response.data.message ? e.response.data.message : e.message;
+		if (message === 'Not authorized, token failed' || message === 'Not authorized, no token') {
+			dispatch(logoutUser());
+		}
+		dispatch({
+			type: EVENT_DETAILS_FAIL,
 			payload: message,
 		});
 	}

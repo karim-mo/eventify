@@ -14,6 +14,8 @@ import PrivateRoute from './components/PrivateRoute';
 import { useEffect } from 'react';
 import Ticket from './views/Ticket';
 import TicketerPage from './views/TicketerPage';
+import AdminPage from './views/AdminPage';
+import EditEvent from './views/EditEvent';
 
 const App = () => {
 	return (
@@ -22,42 +24,23 @@ const App = () => {
 			<main className='py-3'>
 				<Route path='/' exact component={HomeScreen} />
 				<Route path='/events' component={EventScreen} exact />
-				<Route
-					path='/events/page/:pageNo'
-					component={EventScreen}
-					exact
-				/>
+				<Route path='/events/page/:pageNo' component={EventScreen} exact />
 				<Route path='/event/details/:id' component={EventDetails} />
 				<Route path='/login' component={Login} />
 				<Route path='/register' component={Register} />
 				<Route path='/cart' component={Cart} />
 				<Route path='/confirmation/:id' component={Confirmation} />
 				<Route path='/orders/:id' component={Order} />
-				<PrivateRoute
-					path='/members/:name/profile'
-					exact
-					component={Profile}
-				/>
-				<PrivateRoute
-					path='/members/:name/profile/:key'
-					exact
-					component={Profile}
-				/>
-				<PrivateRoute
-					path='/members/:name/profile/:key/page/:pageNo'
-					exact
-					component={Profile}
-				/>
-				<PrivateRoute
-					path='/ticket/details/:id'
-					exact
-					component={Ticket}
-				/>
-				<PrivateRoute
-					path='/tickets/:id'
-					exact
-					component={TicketerPage}
-				/>
+				<PrivateRoute path='/members/:name/profile' exact component={Profile} />
+				<PrivateRoute path='/members/:name/profile/:key' exact component={Profile} />
+				<PrivateRoute path='/members/:name/profile/:key/page/:pageNo' exact component={Profile} />
+				<PrivateRoute path='/ticket/details/:id' exact component={Ticket} />
+				<PrivateRoute path='/tickets/:id' exact component={TicketerPage} />
+				<PrivateRoute path='/dashboard' exact component={AdminPage} />
+				<PrivateRoute path='/dashboard/:key' exact component={AdminPage} />
+				<PrivateRoute path='/dashboard/:key/page/:pageNo' exact component={AdminPage} />
+				<PrivateRoute path='/dashboard/new/create-event' exact component={HomeScreen} />
+				<PrivateRoute path='/dashboard/editevent/:id' exact component={EditEvent} />
 			</main>
 			<Footer />
 		</Router>

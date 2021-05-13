@@ -9,6 +9,7 @@ import {
 import { userInfoReducer } from './reducers/userReducer';
 import { userConfirmationReducer } from './reducers/confirmationReducer';
 import {
+	adminOrdersReducer,
 	orderDetailsReducer,
 	ordersReducer,
 	userOrdersReducer,
@@ -31,6 +32,7 @@ const reducer = combineReducers({
 	userTickets: userTicketsReducer,
 	ticketDetails: ticketDetailsReducer,
 	publicTicketDetails: publicTicketDetailsReducer,
+	adminOrders: adminOrdersReducer,
 });
 
 const getUserInfo = () => {

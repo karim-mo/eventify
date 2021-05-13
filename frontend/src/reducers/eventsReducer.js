@@ -17,10 +17,7 @@ import {
 	USER_EVENTS_SUCCESS,
 } from '../types';
 
-export const eventListReducer = (
-	state = { events: [], loading: true },
-	action
-) => {
+export const eventListReducer = (state = { events: [], loading: true }, action) => {
 	switch (action.type) {
 		case EVENT_LIST_REQUEST:
 			return { ...state, loading: true };
@@ -52,7 +49,7 @@ export const eventDetailsReducer = (
 ) => {
 	switch (action.type) {
 		case EVENT_DETAILS_REQUEST:
-			return { ...state, loading: true };
+			return { loading: true };
 		case EVENT_DETAILS_SUCCESS:
 			return {
 				loading: false,

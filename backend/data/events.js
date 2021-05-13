@@ -20,11 +20,9 @@ const events = [
 		password: bcrypt.hashSync('123456', 10),
 		eventCountry: [
 			{
-				countryName: 'United States of America',
 				countryCode: 'US',
 			},
 			{
-				countryName: 'global',
 				countryCode: 'GLOBAL',
 			},
 		],
@@ -57,7 +55,6 @@ const events = [
 		password: bcrypt.hashSync('123456', 10),
 		eventCountry: [
 			{
-				countryName: 'Egypt',
 				countryCode: 'EG',
 			},
 		],
@@ -83,15 +80,12 @@ const events = [
 		password: bcrypt.hashSync('123456', 10),
 		eventCountry: [
 			{
-				countryName: 'United States of America',
 				countryCode: 'US',
 			},
 			{
-				countryName: 'Egypt',
 				countryCode: 'EG',
 			},
 			{
-				countryName: 'global',
 				countryCode: 'GLOBAL',
 			},
 		],
@@ -117,7 +111,6 @@ const events = [
 		password: bcrypt.hashSync('123456', 10),
 		eventCountry: [
 			{
-				countryName: 'United Kingdom',
 				countryCode: 'UK',
 			},
 		],
@@ -143,7 +136,6 @@ const events = [
 		password: bcrypt.hashSync('123456', 10),
 		eventCountry: [
 			{
-				countryName: 'global',
 				countryCode: 'GLOBAL',
 			},
 		],

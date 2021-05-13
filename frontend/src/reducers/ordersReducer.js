@@ -12,6 +12,9 @@ import {
 	USER_ORDERS_FAIL,
 	USER_ORDERS_SUCCESS,
 	USER_ORDERS_REQUEST,
+	ADMIN_ORDERS_REQUEST,
+	ADMIN_ORDERS_SUCCESS,
+	ADMIN_ORDERS_FAIL,
 } from '../types';
 
 export const ordersReducer = (state = { loading: false }, action) => {
@@ -99,6 +102,28 @@ export const userOrdersReducer = (state = { loading: true }, action) => {
 				pages: action.payload.pages,
 			};
 		case USER_ORDERS_FAIL:
+			return {
+				loading: false,
+				fetched: false,
+				error: action.payload,
+			};
+		default:
+			return state;
+	}
+};
+
+export const adminOrdersReducer = (state = { loading: true }, action) => {
+	switch (action.type) {
+		case ADMIN_ORDERS_REQUEST:
+			return { loading: true };
+		case ADMIN_ORDERS_SUCCESS:
+			return {
+				loading: false,
+				fetched: true,
+				orders: action.payload.orders,
+				pages: action.payload.pages,
+			};
+		case ADMIN_ORDERS_FAIL:
 			return {
 				loading: false,
 				fetched: false,
