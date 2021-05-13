@@ -63,9 +63,7 @@ const register = asyncHandler(async (req, res) => {
 		});
 	} else {
 		res.status(500);
-		throw new Error(
-			'An Error occurred, contact customer support if you cannot Sign In.'
-		);
+		throw new Error('An Error occurred, contact customer support if you cannot Sign In.');
 	}
 });
 
@@ -94,8 +92,7 @@ const confirmation = asyncHandler(async (req, res) => {
 		});
 
 		if (user) {
-			user.confirmationURL =
-				crypto.randomBytes(20).toString('hex') + user._id;
+			user.confirmationURL = crypto.randomBytes(20).toString('hex') + user._id;
 			await user.save();
 			await sendEmail({
 				to: user.email,
@@ -117,8 +114,7 @@ const reconfirmation = asyncHandler(async (req, res) => {
 	const user = await User.findOne({ email });
 
 	if (user) {
-		user.confirmationURL =
-			crypto.randomBytes(20).toString('hex') + user._id;
+		user.confirmationURL = crypto.randomBytes(20).toString('hex') + user._id;
 		await user.save();
 		await sendEmail({
 			to: user.email,
@@ -137,8 +133,69 @@ const allowAdmin = asyncHandler(async (req, res) => {
 	res.json({});
 });
 
+const getUsers = asyncHandler(async (req, res) => {
+	const usersPerPage = 10;
+	const pageNo = Number(req.query.pageNo) || 1;
+
+	const usersCount = await User.countDocuments({});
+	if (usersCount) {
+		const pages = Math.ceil(usersCount / usersPerPage);
+		if (pages < pageNo) {
+			res.status(400);
+			throw new Error('No users to show');
+		}
+		const users = await User.find({})
+			.limit(usersPerPage)
+			.skip(usersPerPage * (pageNo - 1))
+			.sort({ createdAt: -1 });
+
+		res.json({ users, pages });
+	} else {
+		res.status(404);
+		throw new Error('No users to show');
+	}
+});
+
+const deleteUserByID = asyncHandler(async (req, res) => {
+	const user = await User.findById(req.params.id);
+	if (user && !user.admin) {
+		await User.deleteOne({ _id: user._id });
+		res.json({});
+	} else {
+		res.status(404);
+		throw new Error('No users to delete');
+	}
+});
+
+const createTicketer = asyncHandler(async (req, res) => {
+	const { eventID } = req.body;
+	const event = await Event.findById(eventID);
+	if (event) {
+		const ticketerHEX = crypto.randomBytes(20).toString('hex');
+		const ticketer = await User.create({
+			name: `Ticketer ${ticketerHEX.slice(0, 5)}`,
+			email: `${ticketerHEX}@eventify.co`,
+			password: `eventify`,
+			country: 'N/A',
+			confirmationURL: 'n/a',
+			admin: false,
+			ticketer: true,
+			isConfirmed: true,
+			eventID: event._id,
+		});
+		ticketer.email = `${ticketer._id}@eventify.co`;
+		await ticketer.save();
+		res.json({});
+	} else {
+		res.status(404);
+		throw new Error('Event not found');
+	}
+});
+
+router.route('/').get(protect, admin, getUsers).put(protect, admin, createTicketer);
 router.route('/auth').post(login).put(register);
 router.route('/confirm').put(confirmation).post(reconfirmation);
 router.route('/checkadmin').post(protect, admin, allowAdmin);
+router.route('/:id').delete(protect, admin, deleteUserByID);
 
 export default router;

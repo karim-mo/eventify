@@ -21,12 +21,16 @@ import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 import { deleteEvent, listEvents } from '../actions/eventReducerActions';
 import axios from 'axios';
+import { createTicketer, deleteUser, getAdminUsers } from '../actions/userReducerActions';
 
 const AdminPage = ({ match, history }) => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [deleteEventModal, setDeleteEventModal] = useState(false);
 	const [eventIDToDelete, setEventIDToDelete] = useState(null);
+	const [deleteUserModal, setDeleteUserModal] = useState(false);
+	const [userIDToDelete, setUserIDToDelete] = useState(null);
+	const [ticketerEvent, setTicketerEvent] = useState('');
 
 	useEffect(() => {
 		const checkPrivilege = async () => {
@@ -77,6 +81,15 @@ const AdminPage = ({ match, history }) => {
 	const eventList = useSelector((state) => state.eventList);
 	const { loading: eventsLoading, error: eventsError, events, pages: eventsPages } = eventList;
 
+	const adminUsers = useSelector((state) => state.adminUsers);
+	const {
+		loading: usersLoading,
+		error: usersError,
+		users,
+		pages: usersPages,
+		fetched: usersFetched,
+	} = adminUsers;
+
 	const TabSelectHandler = (k) => {
 		setKey(k);
 		switch (k) {
@@ -98,6 +111,7 @@ const AdminPage = ({ match, history }) => {
 		}
 	};
 
+	// Orders
 	const filterOrders = () => {
 		if (!ordersQuery) return orders;
 
@@ -108,16 +122,39 @@ const AdminPage = ({ match, history }) => {
 		dispatch(cancelOrder(orderID));
 	};
 
+	// Events
 	const filterEvents = () => {
 		if (!eventsQuery) return events;
 
-		return events.filter((event) => event.name.toString().includes(eventsQuery));
+		return events.filter((event) =>
+			event.name.toString().toLowerCase().includes(eventsQuery.toLowerCase())
+		);
 	};
 
 	const deleteEventHandler = () => {
 		setDeleteEventModal(false);
 		dispatch(deleteEvent(eventIDToDelete));
 		setEventIDToDelete(null);
+	};
+
+	// Users
+	const filterUsers = () => {
+		if (!usersQuery) return users;
+
+		return users.filter((user) => user.email.toString().toLowerCase().includes(usersQuery.toLowerCase()));
+	};
+
+	const deleteUserHandler = () => {
+		setDeleteUserModal(false);
+		dispatch(deleteUser(userIDToDelete));
+		setUserIDToDelete(null);
+	};
+
+	const createTicketerHandler = () => {
+		if (ticketerEvent) {
+			dispatch(createTicketer(ticketerEvent));
+			setTicketerEvent('');
+		}
 	};
 
 	const pageNo = match.params.pageNo || 1;
@@ -131,6 +168,7 @@ const AdminPage = ({ match, history }) => {
 				dispatch(listEvents(pageNo));
 				return;
 			case 'users':
+				dispatch(getAdminUsers(pageNo));
 				return;
 			case 'tickets':
 				return;
@@ -152,6 +190,22 @@ const AdminPage = ({ match, history }) => {
 							Cancel
 						</Button>
 						<Button variant='danger' onClick={deleteEventHandler}>
+							Delete
+						</Button>
+					</Modal.Footer>
+				</Modal>
+			)}
+			{deleteUserModal && (
+				<Modal show={deleteUserModal}>
+					<Modal.Header>
+						<Modal.Title>Attention!</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>Are you sure you want to delete this user?</Modal.Body>
+					<Modal.Footer>
+						<Button variant='secondary' onClick={() => setDeleteUserModal(false)}>
+							Cancel
+						</Button>
+						<Button variant='danger' onClick={deleteUserHandler}>
 							Delete
 						</Button>
 					</Modal.Footer>
@@ -357,24 +411,99 @@ const AdminPage = ({ match, history }) => {
 										<input
 											type='text'
 											style={{ minWidth: '20%' }}
-											placeholder='Search by ID'
+											placeholder='Search by email'
+											value={usersQuery}
+											onChange={(e) => setUsersQuery(e.target.value)}
 										/>
 									</Col>
 								</Row>
-
-								<>
-									<Table striped bordered hover responsive className='table-sm'>
-										<thead>
-											<tr>
-												<th>ID</th>
-												<th>DATE</th>
-												<th>TOTAL PRICE</th>
-												<th>STATUS</th>
-											</tr>
-										</thead>
-										<tbody></tbody>
-									</Table>
-								</>
+								{usersLoading ? (
+									<Loading />
+								) : usersError ? (
+									<ErrorMessage variant='danger'>{usersError}</ErrorMessage>
+								) : (
+									<>
+										<Table striped bordered hover responsive className='table-sm'>
+											<thead>
+												<tr>
+													<th>ID</th>
+													<th>NAME</th>
+													<th>EMAIL</th>
+													<th>VERIFIED</th>
+													<th>COUNTRY</th>
+													<th>TICKETER</th>
+													<th>EVENT?</th>
+													<th>ADMIN</th>
+													<th>ACTIONS</th>
+												</tr>
+											</thead>
+											<tbody>
+												{filterUsers().map((user) => (
+													<tr key={user._id}>
+														<td>{user._id}</td>
+														<td>{user.name}</td>
+														<td>{user.email}</td>
+														<td>{user.isConfirmed ? 'Yes' : 'No'}</td>
+														<td>{user.country}</td>
+														<td>{user.ticketer ? 'Yes' : 'No'}</td>
+														<td>
+															{user.ticketer ? (
+																<Link to={`/event/details/${user.eventID}`}>
+																	{user.eventID}{' '}
+																</Link>
+															) : (
+																'N/A'
+															)}
+														</td>
+														<td>{user.admin ? 'Yes' : 'No'}</td>
+														{!user.admin && (
+															<td>
+																<div
+																	style={{
+																		width: '100%',
+																		textAlign: 'center',
+																	}}
+																>
+																	<i
+																		onClick={() => {
+																			setUserIDToDelete(user._id);
+																			setDeleteUserModal(true);
+																		}}
+																		style={{
+																			cursor: 'pointer',
+																		}}
+																		className='fas fa-trash'
+																	></i>
+																</div>
+															</td>
+														)}
+													</tr>
+												))}
+											</tbody>
+										</Table>
+										<Row>
+											<Col className='text-right'>
+												<AdminPaginate pages={usersPages} page={pageNo} adminUsers />
+											</Col>
+											<Col md={6} className='text-right'>
+												<Button onClick={createTicketerHandler}>
+													<i className='fas fa-plus'></i> Create New Ticketer
+													Account
+												</Button>
+											</Col>
+											<Col md={4} className='text-right'>
+												<Form.Group controlId='name'>
+													<Form.Control
+														type='text'
+														placeholder='Event ID'
+														value={ticketerEvent}
+														onChange={(e) => setTicketerEvent(e.target.value)}
+													></Form.Control>
+												</Form.Group>
+											</Col>
+										</Row>
+									</>
+								)}
 							</Tab>
 							<Tab eventKey='tickets' title='Tickets'>
 								<Row className='mb-3 mt-2'>

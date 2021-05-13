@@ -25,18 +25,13 @@ const AdminPaginate = ({
 										: adminEvents
 										? `/dashboard/events/page/${pageNo + 1}`
 										: adminTickets
-										? `/dashboard/tickets/page/${
-												pageNo + 1
-										  }`
+										? `/dashboard/tickets/page/${pageNo + 1}`
 										: adminUsers
 										? `/dashboard/users/page/${pageNo + 1}`
-										: adminPromos &&
-										  `/dashboard/promo/page/${pageNo + 1}`
+										: adminPromos && `/dashboard/promo/page/${pageNo + 1}`
 								}
 							>
-								<Pagination.Item active={pageNo + 1 === page}>
-									{pageNo + 1}
-								</Pagination.Item>
+								<Pagination.Item active={pageNo + 1 === page}>{pageNo + 1}</Pagination.Item>
 							</LinkContainer>
 						))}
 					</Pagination>
