@@ -1,7 +1,4 @@
 import {
-	ADMIN_TICKETS_FAIL,
-	ADMIN_TICKETS_REQUEST,
-	ADMIN_TICKETS_SUCCESS,
 	PUBLIC_TICKET_DETAILS_FAIL,
 	PUBLIC_TICKET_DETAILS_REQUEST,
 	PUBLIC_TICKET_DETAILS_SUCCESS,
@@ -32,15 +29,24 @@ export const getUserTickets = (pageNo) => async (dispatch, getState) => {
 				Authorization: `Bearer ${user.token}`,
 			},
 		};
-		const { data } = await axios.get(`/v3/tickets/usertickets?pageNo=${pageNo}`, config);
+		const { data } = await axios.get(
+			`/v3/tickets/usertickets?pageNo=${pageNo}`,
+			config
+		);
 
 		dispatch({
 			type: USER_TICKETS_SUCCESS,
 			payload: data,
 		});
 	} catch (e) {
-		const message = e.response && e.response.data.message ? e.response.data.message : e.message;
-		if (message === 'Not authorized, token failed' || message === 'Not authorized, no token') {
+		const message =
+			e.response && e.response.data.message
+				? e.response.data.message
+				: e.message;
+		if (
+			message === 'Not authorized, token failed' ||
+			message === 'Not authorized, no token'
+		) {
 			dispatch(logoutUser());
 		}
 		dispatch({
@@ -66,15 +72,25 @@ export const getTicketDetails = (ticketID) => async (dispatch, getState) => {
 				Authorization: `Bearer ${user.token}`,
 			},
 		};
-		const { data } = await axios.post(`/v3/tickets/${ticketID}`, {}, config);
+		const { data } = await axios.post(
+			`/v3/tickets/${ticketID}`,
+			{},
+			config
+		);
 
 		dispatch({
 			type: TICKET_DETAILS_SUCCESS,
 			payload: data,
 		});
 	} catch (e) {
-		const message = e.response && e.response.data.message ? e.response.data.message : e.message;
-		if (message === 'Not authorized, token failed' || message === 'Not authorized, no token') {
+		const message =
+			e.response && e.response.data.message
+				? e.response.data.message
+				: e.message;
+		if (
+			message === 'Not authorized, token failed' ||
+			message === 'Not authorized, no token'
+		) {
 			dispatch(logoutUser());
 		}
 		dispatch({
@@ -84,7 +100,10 @@ export const getTicketDetails = (ticketID) => async (dispatch, getState) => {
 	}
 };
 
-export const getPublicTicketDetails = (ticketID) => async (dispatch, getState) => {
+export const getPublicTicketDetails = (ticketID) => async (
+	dispatch,
+	getState
+) => {
 	try {
 		dispatch({
 			type: PUBLIC_TICKET_DETAILS_REQUEST,
@@ -107,8 +126,14 @@ export const getPublicTicketDetails = (ticketID) => async (dispatch, getState) =
 			payload: data,
 		});
 	} catch (e) {
-		const message = e.response && e.response.data.message ? e.response.data.message : e.message;
-		if (message === 'Not authorized, token failed' || message === 'Not authorized, no token') {
+		const message =
+			e.response && e.response.data.message
+				? e.response.data.message
+				: e.message;
+		if (
+			message === 'Not authorized, token failed' ||
+			message === 'Not authorized, no token'
+		) {
 			dispatch(logoutUser());
 		}
 		dispatch({
@@ -141,84 +166,18 @@ export const markTicketAsSeen = (ticketID) => async (dispatch, getState) => {
 			payload: data,
 		});
 	} catch (e) {
-		const message = e.response && e.response.data.message ? e.response.data.message : e.message;
-		if (message === 'Not authorized, token failed' || message === 'Not authorized, no token') {
+		const message =
+			e.response && e.response.data.message
+				? e.response.data.message
+				: e.message;
+		if (
+			message === 'Not authorized, token failed' ||
+			message === 'Not authorized, no token'
+		) {
 			dispatch(logoutUser());
 		}
 		dispatch({
 			type: PUBLIC_TICKET_DETAILS_FAIL,
-			payload: message,
-		});
-	}
-};
-
-export const getAdminTickets = (pageNo) => async (dispatch, getState) => {
-	try {
-		dispatch({
-			type: ADMIN_TICKETS_REQUEST,
-		});
-
-		const {
-			userInfo: { user },
-		} = getState();
-
-		const config = {
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${user.token}`,
-			},
-		};
-		const { data } = await axios.get(`/v3/tickets?pageNo=${pageNo}`, config);
-
-		dispatch({
-			type: ADMIN_TICKETS_SUCCESS,
-			payload: data,
-		});
-	} catch (e) {
-		const message = e.response && e.response.data.message ? e.response.data.message : e.message;
-		if (message === 'Not authorized, token failed' || message === 'Not authorized, no token') {
-			dispatch(logoutUser());
-		}
-		dispatch({
-			type: ADMIN_TICKETS_FAIL,
-			payload: message,
-		});
-	}
-};
-
-export const deleteTicket = (ticketID) => async (dispatch, getState) => {
-	try {
-		const {
-			adminTickets: { tickets, pages },
-		} = getState();
-
-		const {
-			userInfo: { user },
-		} = getState();
-
-		dispatch({
-			type: ADMIN_TICKETS_SUCCESS,
-			payload: {
-				pages: pages,
-				tickets: tickets.filter((ticket) => ticket._id.toString() !== ticketID.toString()),
-			},
-		});
-
-		const config = {
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${user.token}`,
-			},
-		};
-
-		await axios.delete(`/v3/tickets/${ticketID}`, config);
-	} catch (e) {
-		const message = e.response && e.response.data.message ? e.response.data.message : e.message;
-		if (message === 'Not authorized, token failed' || message === 'Not authorized, no token') {
-			dispatch(logoutUser());
-		}
-		dispatch({
-			type: ADMIN_TICKETS_FAIL,
 			payload: message,
 		});
 	}

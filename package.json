@@ -1,19 +1,12 @@
 {
-	"name": "eventify",
+	"name": "eventify-frontend-heroku",
 	"version": "1.0.0",
-	"description": "Social Events Website",
+	"description": "Eventify Frontend",
 	"main": "server.js",
 	"type": "module",
 	"scripts": {
-		"start": "node backend/server",
-		"server": "nodemon backend/server",
-		"client": "npm start --prefix frontend",
-		"dev": "concurrently \"npm run server\" \"npm run client\"",
-		"data:import": "node backend/seeder",
-		"data:destroy": "node backend/seeder -d"
+		"heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend"
 	},
-	"author": "Karim Mohamed",
-	"license": "MIT",
 	"dependencies": {
 		"bcryptjs": "^2.4.3",
 		"colors": "^1.4.0",
@@ -23,13 +16,10 @@
 		"jsonwebtoken": "^8.5.1",
 		"mongoose": "^5.12.5",
 		"morgan": "^1.10.0",
-		"multer": "^1.4.2",
 		"nodemailer": "^6.6.0",
 		"react-router-bootstrap": "^0.25.0",
 		"request": "^2.88.2"
 	},
-	"devDependencies": {
-		"concurrently": "^6.0.2",
-		"nodemon": "^2.0.7"
-	}
+	"author": "Karim Mohammed",
+	"license": "MIT"
 }

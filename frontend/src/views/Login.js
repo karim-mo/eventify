@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Card, Col, Container, Form, Jumbotron, Row } from 'react-bootstrap';
+import {
+	Button,
+	Card,
+	Col,
+	Container,
+	Form,
+	Jumbotron,
+	Row,
+} from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Loading from '../components/Loading';
@@ -84,25 +92,34 @@ const Login = ({ location, history }) => {
 										<h2>Confirmation Already Sent!</h2>
 									</Card.Header>
 									<Card.Body className='text-center'>
-										We've previously sent an email to {email} for confirmation, please
-										click the link sent to you to finish the registration process and be
-										able to use Eventify's Services.
+										We've previously sent an email to{' '}
+										{email} for confirmation, please click
+										the link sent to you to finish the
+										registration process and be able to use
+										Eventify's Services.
 										<br />
 										<br />
 										If you haven't received an email, click{' '}
-										<Link to='/login' onClick={reSendConfirmationHandler}>
+										<Link
+											to='/login'
+											onClick={reSendConfirmationHandler}
+										>
 											Here
 										</Link>{' '}
 										to send another one!
 										<br />
 										<br />
-										<strong>Note: </strong> Make sure to check your spam folder too if you
-										didn't receive an email!
+										<strong>Note: </strong> Make sure to
+										check your spam folder too if you didn't
+										receive an email!
 										<br />
 										<br />
 										If any problems occur,{' '}
-										<Link to='/contactus'> send us an inquiry</Link> We'll be happy to
-										assist!
+										<Link to='/contactus'>
+											{' '}
+											send us an inquiry
+										</Link>{' '}
+										We'll be happy to assist!
 									</Card.Body>
 								</Card>
 							</Col>
@@ -111,10 +128,18 @@ const Login = ({ location, history }) => {
 				) : (
 					<Row className='justify-content-md-center'>
 						<Col xs={12} md={6}>
-							{message && <ErrorMessage variant='success'>{message}</ErrorMessage>}
+							{message && (
+								<ErrorMessage variant='success'>
+									{message}
+								</ErrorMessage>
+							)}
 							<h1>Sign In</h1>
 							{loading && <Loading />}
-							{error && <ErrorMessage variant='danger'>{error}</ErrorMessage>}
+							{error && (
+								<ErrorMessage variant='danger'>
+									{error}
+								</ErrorMessage>
+							)}
 							<Form onSubmit={submitHandler}>
 								<Form.Group controlId='email'>
 									<Form.Label>Email Address</Form.Label>
@@ -122,7 +147,9 @@ const Login = ({ location, history }) => {
 										type='email'
 										placeholder='Enter email'
 										value={email}
-										onChange={(e) => setEmail(e.target.value)}
+										onChange={(e) =>
+											setEmail(e.target.value)
+										}
 									></Form.Control>
 								</Form.Group>
 
@@ -132,25 +159,27 @@ const Login = ({ location, history }) => {
 										type='password'
 										placeholder='Enter password'
 										value={password}
-										onChange={(e) => setPassword(e.target.value)}
+										onChange={(e) =>
+											setPassword(e.target.value)
+										}
 									></Form.Control>
 								</Form.Group>
-								<Row>
-									<Col>
-										<Button type='submit' variant='primary'>
-											Sign In
-										</Button>
-									</Col>
-									<Col className='text-right'>
-										<Link to='/forgotpw'>Forgot password?</Link>
-									</Col>
-								</Row>
+
+								<Button type='submit' variant='primary'>
+									Sign In
+								</Button>
 							</Form>
 
 							<Row className='py-3'>
 								<Col>
 									New User?{' '}
-									<Link to={redirect ? `/register?redirect=${redirect}` : '/register'}>
+									<Link
+										to={
+											redirect
+												? `/register?redirect=${redirect}`
+												: '/register'
+										}
+									>
 										Register
 									</Link>
 								</Col>

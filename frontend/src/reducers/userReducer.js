@@ -16,9 +16,6 @@ import {
 	USER_CART_REQUEST,
 	USER_CART_SUCCESS,
 	USER_CART_RESET,
-	ADMIN_USERS_REQUEST,
-	ADMIN_USERS_SUCCESS,
-	ADMIN_USERS_FAIL,
 } from '../types';
 
 const userInfoInitialState = {
@@ -146,28 +143,6 @@ export const userInfoReducer = (state = userInfoInitialState, action) => {
 				removeFromCartSuccess: null,
 			};
 
-		default:
-			return state;
-	}
-};
-
-export const adminUsersReducer = (state = { loading: true }, action) => {
-	switch (action.type) {
-		case ADMIN_USERS_REQUEST:
-			return { loading: true };
-		case ADMIN_USERS_SUCCESS:
-			return {
-				loading: false,
-				fetched: true,
-				users: action.payload.users,
-				pages: action.payload.pages,
-			};
-		case ADMIN_USERS_FAIL:
-			return {
-				loading: false,
-				fetched: false,
-				error: action.payload,
-			};
 		default:
 			return state;
 	}
