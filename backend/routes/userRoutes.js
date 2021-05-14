@@ -207,7 +207,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
 		await sendEmail({
 			to: email,
 			subject: 'Eventify Password reset',
-			text: `You requested a password reset at Eventify, if this wasn't you then we recommend you change your password immidiately.\nIf it was you, please proceed with this link http://localhost:3000/resetpw/${passResetURL}`,
+			text: `You requested a password reset at Eventify, if this wasn't you then we recommend you change your password immidiately.\nIf it was you, please proceed with this link https://eventify-global.herokuapp.com/resetpw/${passResetURL}`,
 		});
 		res.json({});
 	} else {

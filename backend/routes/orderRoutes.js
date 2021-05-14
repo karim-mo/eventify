@@ -19,11 +19,7 @@ const editEventTickets = async (orderID) => {
 		let updatedOrderItems = await Promise.all(
 			order.orderItems.map(async (ticket) => {
 				const event = await Event.findById(ticket.eventID);
-				const date = new Date(
-					event.endsOn.year,
-					event.endsOn.month - 1,
-					event.endsOn.day + 1
-				);
+				const date = new Date(event.endsOn.year, event.endsOn.month - 1, event.endsOn.day + 1);
 				if (today >= date || event.availableTickets <= 0) {
 					return;
 				}
@@ -76,7 +72,7 @@ const buyTicketsForOrder = async (orderID) => {
 							eventName: event.name,
 							URL: 'N/A',
 						});
-						const URL = `http://localhost:3000/tickets/${newTicket._id}`;
+						const URL = `https://eventify-global.herokuapp.com/tickets/${newTicket._id}`;
 						newTicket.URL = URL;
 						await newTicket.save();
 
@@ -89,14 +85,10 @@ const buyTicketsForOrder = async (orderID) => {
 							event.joinedUsers.push(newJoinedUser);
 							await event.save();
 						} else {
-							throw new Error(
-								'BuyTicketsForOrder(): Couldnt get user from ticket'
-							);
+							throw new Error('BuyTicketsForOrder(): Couldnt get user from ticket');
 						}
 					} else {
-						throw new Error(
-							'BuyTicketsForOrder(): Couldnt get event'
-						);
+						throw new Error('BuyTicketsForOrder(): Couldnt get event');
 					}
 				}
 			} else {
@@ -143,11 +135,7 @@ const createOrder = asyncHandler(async (req, res) => {
 		let updatedCart = await Promise.all(
 			cart.map(async (ticket) => {
 				const event = await Event.findById(ticket.eventID);
-				const date = new Date(
-					event.endsOn.year,
-					event.endsOn.month - 1,
-					event.endsOn.day + 1
-				);
+				const date = new Date(event.endsOn.year, event.endsOn.month - 1, event.endsOn.day + 1);
 				if (today >= date) {
 					return;
 				}
@@ -159,20 +147,12 @@ const createOrder = asyncHandler(async (req, res) => {
 		await req.user.save();
 		if (updatedCart.length <= 0) {
 			res.status(400);
-			throw new Error(
-				'Cart has been cleared of expired items and is now empty, cannot proceed.'
-			);
+			throw new Error('Cart has been cleared of expired items and is now empty, cannot proceed.');
 		}
 
-		const itemsPrice = cart
-			.reduce((acc, ticket) => acc + ticket.ticketPrice, 0)
-			.toFixed(2);
-		const fees = cart
-			.reduce((acc, ticket) => acc + 0.05 * ticket.ticketPrice, 0)
-			.toFixed(2);
-		const totalPrice = cart
-			.reduce((acc, ticket) => acc + 1.05 * ticket.ticketPrice, 0)
-			.toFixed(2);
+		const itemsPrice = cart.reduce((acc, ticket) => acc + ticket.ticketPrice, 0).toFixed(2);
+		const fees = cart.reduce((acc, ticket) => acc + 0.05 * ticket.ticketPrice, 0).toFixed(2);
+		const totalPrice = cart.reduce((acc, ticket) => acc + 1.05 * ticket.ticketPrice, 0).toFixed(2);
 		const order = await Order.create({
 			userID: req.user._id,
 			orderItems: updatedCart,
@@ -208,15 +188,10 @@ const createOrder = asyncHandler(async (req, res) => {
 			asyncHandler(async (err, response) => {
 				if (err) {
 					res.status(500);
-					const err = new Error(
-						'Failed to create order, try again later.'
-					);
+					const err = new Error('Failed to create order, try again later.');
 					res.json({
 						message: err.message,
-						stack:
-							process.env.DEV_MODE === 'production'
-								? null
-								: err.stack,
+						stack: process.env.DEV_MODE === 'production' ? null : err.stack,
 					});
 					return;
 				}
@@ -256,27 +231,18 @@ const getPaypalOrder = asyncHandler(async (req, res) => {
 					const err = new Error('An unknown error occurred.');
 					res.json({
 						message: err.message,
-						stack:
-							process.env.DEV_MODE === 'production'
-								? null
-								: err.stack,
+						stack: process.env.DEV_MODE === 'production' ? null : err.stack,
 					});
 					return;
 				}
-				if (
-					response.body.name &&
-					response.body.name === 'RESOURCE_NOT_FOUND'
-				) {
+				if (response.body.name && response.body.name === 'RESOURCE_NOT_FOUND') {
 					res.status(401);
 					const err = new Error(
 						'Payment ID could not be retrieved, please refresh the page or contact customer support'
 					);
 					res.json({
 						message: err.message,
-						stack:
-							process.env.DEV_MODE === 'production'
-								? null
-								: err.stack,
+						stack: process.env.DEV_MODE === 'production' ? null : err.stack,
 					});
 					return;
 				}
@@ -287,9 +253,7 @@ const getPaypalOrder = asyncHandler(async (req, res) => {
 		);
 	} else {
 		res.status(404);
-		throw new Error(
-			'Order not found, try again or contact customer support.'
-		);
+		throw new Error('Order not found, try again or contact customer support.');
 	}
 });
 
@@ -312,29 +276,18 @@ const confirmOrder = asyncHandler(async (req, res) => {
 					const err = new Error('An unknown error occurred.');
 					res.json({
 						message: err.message,
-						stack:
-							process.env.DEV_MODE === 'production'
-								? null
-								: err.stack,
+						stack: process.env.DEV_MODE === 'production' ? null : err.stack,
 					});
 					return;
 				}
-				if (
-					response.body.name &&
-					response.body.name === 'RESOURCE_NOT_FOUND'
-				) {
+				if (response.body.name && response.body.name === 'RESOURCE_NOT_FOUND') {
 					res.status(400);
-					const err = new Error(
-						'Error processing your payment, please contact customer support.'
-					);
+					const err = new Error('Error processing your payment, please contact customer support.');
 					order.paymentDetails.status = 'CANCELLED';
 					await order.save();
 					res.json({
 						message: err.message,
-						stack:
-							process.env.DEV_MODE === 'production'
-								? null
-								: err.stack,
+						stack: process.env.DEV_MODE === 'production' ? null : err.stack,
 					});
 					return;
 				} else {
@@ -367,24 +320,15 @@ const confirmOrder = asyncHandler(async (req, res) => {
 										await revertEventTickets(order._id);
 										res.json({
 											message: err.message,
-											stack:
-												process.env.DEV_MODE ===
-												'production'
-													? null
-													: err.stack,
+											stack: process.env.DEV_MODE === 'production' ? null : err.stack,
 										});
 										return;
 									}
-									if (
-										response.body.status &&
-										response.body.status === 'COMPLETED'
-									) {
+									if (response.body.status && response.body.status === 'COMPLETED') {
 										order.paymentDetails = {
 											...order.paymentDetails,
 											status: response.body.status,
-											email_address:
-												response.body.payer
-													.email_address,
+											email_address: response.body.payer.email_address,
 											payer: `${response.body.payer.name.given_name} ${response.body.payer.name.surname}`,
 										};
 										await order.save();
@@ -398,18 +342,13 @@ const confirmOrder = asyncHandler(async (req, res) => {
 											'Failed to process payment, contact customer support'
 										);
 										console.log(`${err.message}`.red.bold);
-										order.paymentDetails.status =
-											'CANCELLED';
+										order.paymentDetails.status = 'CANCELLED';
 										await order.save();
 										await revertEventTickets(order._id);
 										res.status(500);
 										res.json({
 											message: err.message,
-											stack:
-												process.env.DEV_MODE ===
-												'production'
-													? null
-													: err.stack,
+											stack: process.env.DEV_MODE === 'production' ? null : err.stack,
 										});
 										return;
 									}
@@ -424,10 +363,7 @@ const confirmOrder = asyncHandler(async (req, res) => {
 							await order.save();
 							res.json({
 								message: err.message,
-								stack:
-									process.env.DEV_MODE === 'production'
-										? null
-										: err.stack,
+								stack: process.env.DEV_MODE === 'production' ? null : err.stack,
 							});
 							return;
 						}
@@ -437,9 +373,7 @@ const confirmOrder = asyncHandler(async (req, res) => {
 		);
 	} else {
 		res.status(404);
-		throw new Error(
-			'Error retrieving order, please contact customer support'
-		);
+		throw new Error('Error retrieving order, please contact customer support');
 	}
 });
 
@@ -469,10 +403,7 @@ const getOrders = asyncHandler(async (req, res) => {
 const getOrderByID = asyncHandler(async (req, res) => {
 	const order = await Order.findById(req.params.id);
 	const { capture } = req.body;
-	if (
-		order &&
-		(req.user._id.toString() === order.userID.toString() || req.user.admin)
-	) {
+	if (order && (req.user._id.toString() === order.userID.toString() || req.user.admin)) {
 		request.get(
 			`https://api-m.sandbox.paypal.com/v2/checkout/orders/${order.paymentDetails.paymentID}`,
 			{
@@ -488,10 +419,7 @@ const getOrderByID = asyncHandler(async (req, res) => {
 					const err = new Error('An unknown error occurred.');
 					res.json({
 						message: err.message,
-						stack:
-							process.env.DEV_MODE === 'production'
-								? null
-								: err.stack,
+						stack: process.env.DEV_MODE === 'production' ? null : err.stack,
 					});
 					return;
 				}
@@ -524,15 +452,10 @@ const getOrderByID = asyncHandler(async (req, res) => {
 						asyncHandler(async (err, response) => {
 							if (err) {
 								res.status(500);
-								const err = new Error(
-									'Failed to create order, try again later.'
-								);
+								const err = new Error('Failed to create order, try again later.');
 								res.json({
 									message: err.message,
-									stack:
-										process.env.DEV_MODE === 'production'
-											? null
-											: err.stack,
+									stack: process.env.DEV_MODE === 'production' ? null : err.stack,
 								});
 								return;
 							}
@@ -612,16 +535,11 @@ const getOrderByID = asyncHandler(async (req, res) => {
 										console.log(`${err.message}`.red.bold);
 										return;
 									}
-									if (
-										response.body.status &&
-										response.body.status === 'COMPLETED'
-									) {
+									if (response.body.status && response.body.status === 'COMPLETED') {
 										order.paymentDetails = {
 											...order.paymentDetails,
 											status: response.body.status,
-											email_address:
-												response.body.payer
-													.email_address,
+											email_address: response.body.payer.email_address,
 											payer: `${response.body.payer.given_name} ${response.body.payer.surname}`,
 										};
 										await order.save();
@@ -634,8 +552,7 @@ const getOrderByID = asyncHandler(async (req, res) => {
 											'Failed to process payment, contact customer support'
 										);
 										console.log(`${err.message}`.red.bold);
-										order.paymentDetails.status =
-											'CANCELLED';
+										order.paymentDetails.status = 'CANCELLED';
 										await order.save();
 										await revertEventTickets(order._id);
 										return;
@@ -695,15 +612,10 @@ const applyPromo = asyncHandler(async (req, res) => {
 				asyncHandler(async (err, response) => {
 					if (err) {
 						res.status(500);
-						const err = new Error(
-							'Failed to create order, try again later.'
-						);
+						const err = new Error('Failed to create order, try again later.');
 						res.json({
 							message: err.message,
-							stack:
-								process.env.DEV_MODE === 'production'
-									? null
-									: err.stack,
+							stack: process.env.DEV_MODE === 'production' ? null : err.stack,
 						});
 						return;
 					}
@@ -730,9 +642,7 @@ const applyPromo = asyncHandler(async (req, res) => {
 			);
 		} else {
 			res.status(404);
-			throw new Error(
-				`Promo code doesn't exist or has expired, try another one.`
-			);
+			throw new Error(`Promo code doesn't exist or has expired, try another one.`);
 		}
 	} else {
 		res.status(404);
@@ -758,11 +668,7 @@ const editOrderbyID = asyncHandler(async (req, res) => {
 	}
 });
 
-router
-	.route('/userorders')
-	.get(protect, getUserOrders)
-	.put(protect, createOrder)
-	.post(protect, confirmOrder);
+router.route('/userorders').get(protect, getUserOrders).put(protect, createOrder).post(protect, confirmOrder);
 
 router.route('/').get(protect, admin, getOrders);
 
