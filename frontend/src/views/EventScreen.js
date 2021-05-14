@@ -8,6 +8,7 @@ import ErrorMessage from '../components/ErrorMessage';
 import Zoom from '@material-ui/core/Zoom';
 import Fade from '@material-ui/core/Fade';
 import Paginate from '../components/Paginate';
+import Meta from '../components/Meta';
 
 const EventScreen = ({ match }) => {
 	const dispatch = useDispatch();
@@ -23,6 +24,7 @@ const EventScreen = ({ match }) => {
 
 	return (
 		<>
+			<Meta title='Eventify | Events' />
 			<Container>
 				<div
 					style={{

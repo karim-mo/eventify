@@ -5,6 +5,7 @@ import ErrorMessage from '../components/ErrorMessage';
 import { Col, Container, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerUser } from '../actions/userReducerActions';
+import Meta from '../components/Meta';
 
 const Confirmation = ({ match, history }) => {
 	const userInfo = useSelector((state) => state.userInfo);
@@ -36,31 +37,24 @@ const Confirmation = ({ match, history }) => {
 	}, [error, history]);
 
 	return (
-		<Container>
-			{regOpen && (
-				<Snackbar
-					open={regOpen}
-					variant='info'
-					message={`Finalizing Registration & Logging in...`}
-				/>
-			)}
-			{doneOpen && (
-				<Snackbar
-					open={doneOpen}
-					variant='warning'
-					message='Redirecting..'
-				/>
-			)}
-			<Row className='justify-content-md-center'>
-				<Col xs={12} md={6}>
-					{error ? (
-						<ErrorMessage variant='danger'>{error}</ErrorMessage>
-					) : (
-						<Loading />
-					)}
-				</Col>
-			</Row>
-		</Container>
+		<>
+			<Meta title='Eventify | Email Confirmation' />
+			<Container>
+				{regOpen && (
+					<Snackbar
+						open={regOpen}
+						variant='info'
+						message={`Finalizing Registration & Logging in...`}
+					/>
+				)}
+				{doneOpen && <Snackbar open={doneOpen} variant='warning' message='Redirecting..' />}
+				<Row className='justify-content-md-center'>
+					<Col xs={12} md={6}>
+						{error ? <ErrorMessage variant='danger'>{error}</ErrorMessage> : <Loading />}
+					</Col>
+				</Row>
+			</Container>
+		</>
 	);
 };
 

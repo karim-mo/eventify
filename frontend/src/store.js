@@ -5,19 +5,24 @@ import {
 	eventListReducer,
 	eventDetailsReducer,
 	userEventsReducer,
+	adminNewEventReducer,
 } from './reducers/eventsReducer';
-import { userInfoReducer } from './reducers/userReducer';
-import { userConfirmationReducer } from './reducers/confirmationReducer';
+import { adminUsersReducer, userInfoReducer } from './reducers/userReducer';
+import { userConfirmationReducer, userResetPasswordReducer } from './reducers/confirmationReducer';
 import {
+	adminOrdersReducer,
 	orderDetailsReducer,
 	ordersReducer,
 	userOrdersReducer,
 } from './reducers/ordersReducer';
 import {
+	adminTicketsReducer,
 	publicTicketDetailsReducer,
 	ticketDetailsReducer,
 	userTicketsReducer,
 } from './reducers/ticketsReducer';
+import { adminPromosReducer } from './reducers/promosReducer';
+import { emailsReducer } from './reducers/supportReducer';
 
 const reducer = combineReducers({
 	eventList: eventListReducer,
@@ -31,23 +36,24 @@ const reducer = combineReducers({
 	userTickets: userTicketsReducer,
 	ticketDetails: ticketDetailsReducer,
 	publicTicketDetails: publicTicketDetailsReducer,
+	adminOrders: adminOrdersReducer,
+	adminNewEvent: adminNewEventReducer,
+	adminUsers: adminUsersReducer,
+	adminTickets: adminTicketsReducer,
+	adminPromos: adminPromosReducer,
+	userResetPassword: userResetPasswordReducer,
+	emails: emailsReducer,
 });
 
 const getUserInfo = () => {
-	return localStorage.getItem('userInfo')
-		? JSON.parse(localStorage.getItem('userInfo'))
-		: null;
+	return localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;
 };
 
 const initalState = {
 	userInfo: { user: getUserInfo(), isLogged: getUserInfo() ? true : false },
 };
 
-const store = createStore(
-	reducer,
-	initalState,
-	composeWithDevTools(applyMiddleware(thunk))
-);
+const store = createStore(reducer, initalState, applyMiddleware(thunk));
 
 export default store;
 
