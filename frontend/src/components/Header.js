@@ -17,13 +17,7 @@ const Header = () => {
 	// useEffect(() => {}, [user]);
 	return (
 		<div className='tophead'>
-			<Navbar
-				bg='primary'
-				variant='dark'
-				expand='lg'
-				collapseOnSelect
-				className='fixed-top'
-			>
+			<Navbar bg='primary' variant='dark' expand='lg' collapseOnSelect className='fixed-top'>
 				<Container>
 					<LinkContainer to='/'>
 						<Navbar.Brand>Eventify</Navbar.Brand>
@@ -37,41 +31,31 @@ const Header = () => {
 							<LinkContainer to='/events'>
 								<Nav.Link>Events</Nav.Link>
 							</LinkContainer>
-							<LinkContainer to='/about'>
-								<Nav.Link>About</Nav.Link>
+							<LinkContainer to='/login?redirect=contactus'>
+								<Nav.Link>Support</Nav.Link>
 							</LinkContainer>
 						</Nav>
 						<Nav className='ml-auto'>
 							{user ? (
 								<NavDropdown title={user.name} id='username'>
-									<LinkContainer
-										to={`/members/${user.name}/profile`}
-									>
-										<NavDropdown.Item>
-											Profile
-										</NavDropdown.Item>
+									<LinkContainer to={`/members/${user.name}/profile`}>
+										<NavDropdown.Item>Profile</NavDropdown.Item>
 									</LinkContainer>
 									<LinkContainer to='/cart'>
-										<NavDropdown.Item>
-											{`Cart(${user.cart.length})`}
-										</NavDropdown.Item>
+										<NavDropdown.Item>{`Cart(${user.cart.length})`}</NavDropdown.Item>
 									</LinkContainer>
-									<NavDropdown.Item onClick={logoutHandler}>
-										Logout
-									</NavDropdown.Item>
+									<NavDropdown.Item onClick={logoutHandler}>Logout</NavDropdown.Item>
 								</NavDropdown>
 							) : (
 								<>
 									<LinkContainer to='/login'>
 										<Nav.Link>
-											<i className='fas fa-user'></i>{' '}
-											Login
+											<i className='fas fa-user'></i> Login
 										</Nav.Link>
 									</LinkContainer>
 									<LinkContainer to='/register'>
 										<Nav.Link>
-											<i className='fas fa-user-plus'></i>{' '}
-											Sign Up
+											<i className='fas fa-user-plus'></i> Sign Up
 										</Nav.Link>
 									</LinkContainer>
 								</>

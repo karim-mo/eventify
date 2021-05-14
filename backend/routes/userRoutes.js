@@ -230,11 +230,42 @@ const resetPassword = asyncHandler(async (req, res) => {
 	}
 });
 
+const createEvent = asyncHandler(async (req, res) => {
+	const { name, email, description } = req.body;
+	const user = req.user;
+	const body = `Event request from User: ${user._id}\nName: ${name}\nEmail: ${email}\nEvent description:\n${description}`;
+
+	await sendEmail({
+		to: 'eventify.tickets@gmail.com',
+		subject: `New Event Request from ${user.email}`,
+		text: body,
+	});
+	res.json({});
+});
+
+const support = asyncHandler(async (req, res) => {
+	const { name, email, description } = req.body;
+	const body = `Support ticket from User ${req.user._id}\nName: ${name}\nEmail: ${email}\nIssue:\n${description}`;
+
+	await sendEmail({
+		to: 'eventify.tickets@gmail.com',
+		subject: `New Support ticket from ${email}`,
+		text: body,
+	});
+	await sendEmail({
+		to: email,
+		subject: `Ticket received! We'll come back to you shortly`,
+		text: `This is an automated reply to your recent support ticket, we are informing you that one of our support agents will handle your ticket as soon as possible.\nThank you for using Eventify.`,
+	});
+	res.json({});
+});
+
 router.route('/').get(protect, admin, getUsers).put(protect, admin, createTicketer);
 router.route('/userpassword').post(forgotPassword).put(resetPassword);
 router.route('/auth').post(login).put(register);
 router.route('/confirm').put(confirmation).post(reconfirmation);
 router.route('/checkadmin').post(protect, admin, allowAdmin);
+router.route('/emails').post(protect, createEvent).put(protect, support);
 router.route('/:id').delete(protect, admin, deleteUserByID);
 
 export default router;

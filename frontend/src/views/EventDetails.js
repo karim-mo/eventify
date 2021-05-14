@@ -3,11 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { Button, Col, Container, Image, ListGroup, Row } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import {
-	addUserComment,
-	getEventDetails,
-	toggleCommentHeart,
-} from '../actions/eventReducerActions';
+import { addUserComment, getEventDetails, toggleCommentHeart } from '../actions/eventReducerActions';
 import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 import { addToCart } from '../actions/userReducerActions';
@@ -113,15 +109,9 @@ const EventDetails = ({ match }) => {
 
 	const isHeartedByUser = (commentID) => {
 		if (!isLogged || !canComment()) return true;
-		const comment = event.comments.find(
-			(_comment) => _comment._id.toString() === commentID.toString()
-		);
+		const comment = event.comments.find((_comment) => _comment._id.toString() === commentID.toString());
 		if (comment) {
-			if (
-				comment.heartedBy.find(
-					(_user) => _user.userID.toString() === user.id.toString()
-				)
-			)
+			if (comment.heartedBy.find((_user) => _user.userID.toString() === user.id.toString()))
 				return true;
 		}
 		return false;
@@ -130,10 +120,7 @@ const EventDetails = ({ match }) => {
 	const canComment = () => {
 		if (
 			isLogged &&
-			event.joinedUsers.find(
-				(joinedUser) =>
-					joinedUser.userID.toString() === user.id.toString()
-			)
+			event.joinedUsers.find((joinedUser) => joinedUser.userID.toString() === user.id.toString())
 		)
 			return true;
 		return false;
@@ -153,26 +140,10 @@ const EventDetails = ({ match }) => {
 					</LinkContainer>
 				</div>
 				{commentErrorSnackOpen && (
-					<Snackbar
-						open={commentErrorSnackOpen}
-						variant='error'
-						message={commentErrorText}
-					/>
+					<Snackbar open={commentErrorSnackOpen} variant='error' message={commentErrorText} />
 				)}
-				{errorSnackOpen && (
-					<Snackbar
-						open={errorSnackOpen}
-						variant='error'
-						message={message}
-					/>
-				)}
-				{open && (
-					<Snackbar
-						open={open}
-						variant='success'
-						message='Added to Cart'
-					/>
-				)}
+				{errorSnackOpen && <Snackbar open={errorSnackOpen} variant='error' message={message} />}
+				{open && <Snackbar open={open} variant='success' message='Added to Cart' />}
 				{loading ? (
 					<Loading />
 				) : error ? (
@@ -202,11 +173,7 @@ const EventDetails = ({ match }) => {
 										<ListGroup.Item>
 											<Row>
 												<Col>Virtual:</Col>
-												<Col>
-													{event.virtual
-														? 'Yes'
-														: 'No'}
-												</Col>
+												<Col>{event.virtual ? 'Yes' : 'No'}</Col>
 											</Row>
 										</ListGroup.Item>
 										<ListGroup.Item>
@@ -246,22 +213,14 @@ const EventDetails = ({ match }) => {
 														}}
 														disabled={
 															eventEnded(
-																event.endsOn
-																	.day,
-																event.endsOn
-																	.month,
-																event.endsOn
-																	.year
+																event.endsOn.day,
+																event.endsOn.month,
+																event.endsOn.year
 															) ||
-															event.availableTickets <=
-																0 ||
+															event.availableTickets <= 0 ||
 															!isLogged
 														}
-														onClick={() =>
-															addToCartHandler(
-																event._id
-															)
-														}
+														onClick={() => addToCartHandler(event._id)}
 													>
 														Buy Ticket
 													</Button>
@@ -280,49 +239,37 @@ const EventDetails = ({ match }) => {
 									<ListGroup.Item>
 										<Row>
 											<Col>Event Author</Col>
-											<Col className='text-right'>
-												{event.author}
-											</Col>
+											<Col className='text-right'>{event.author}</Col>
 										</Row>
 									</ListGroup.Item>
 									<ListGroup.Item>
 										<Row>
 											<Col>Event Name</Col>
-											<Col className='text-right'>
-												{event.name}
-											</Col>
+											<Col className='text-right'>{event.name}</Col>
 										</Row>
 									</ListGroup.Item>
 									<ListGroup.Item>
 										<Row>
 											<Col>Event Description</Col>
-											<Col className='text-right'>
-												{event.description}
-											</Col>
+											<Col className='text-right'>{event.description}</Col>
 										</Row>
 									</ListGroup.Item>
 									<ListGroup.Item>
 										<Row>
 											<Col>Number of Participants</Col>
-											<Col className='text-right'>
-												{event.joinedUsers.length}
-											</Col>
+											<Col className='text-right'>{event.joinedUsers.length}</Col>
 										</Row>
 									</ListGroup.Item>
 									<ListGroup.Item>
 										<Row>
 											<Col>Category</Col>
-											<Col className='text-right'>
-												{event.category}
-											</Col>
+											<Col className='text-right'>{event.category}</Col>
 										</Row>
 									</ListGroup.Item>
 									<ListGroup.Item>
 										<Row>
 											<Col>Virtual?</Col>
-											<Col className='text-right'>
-												{event.virtual ? 'Yes' : 'No'}
-											</Col>
+											<Col className='text-right'>{event.virtual ? 'Yes' : 'No'}</Col>
 										</Row>
 									</ListGroup.Item>
 									<ListGroup.Item>
@@ -333,8 +280,8 @@ const EventDetails = ({ match }) => {
 													event.endsOn.month,
 													event.endsOn.year
 												)
-													? `Ended on`
-													: `Ends on`}
+													? `Ticket buying ended on`
+													: `Ticket buying ends on`}
 											</Col>
 											<Col className='text-right'>
 												{eventEnded(
@@ -359,8 +306,7 @@ const EventDetails = ({ match }) => {
 								<Col sm={12}>
 									<h1
 										style={{
-											borderBottom:
-												'2px solid whitesmoke',
+											borderBottom: '2px solid whitesmoke',
 										}}
 									>
 										User Comments
@@ -370,10 +316,7 @@ const EventDetails = ({ match }) => {
 										<ListGroup className='mb-3'>
 											<ListGroup.Item>
 												<Row>
-													<Col
-														sm={1}
-														className='mt-2'
-													>
+													<Col sm={1} className='mt-2'>
 														<Image
 															src='/images/avatar.png'
 															fluid
@@ -390,31 +333,18 @@ const EventDetails = ({ match }) => {
 														<textarea
 															style={{
 																width: '100%',
-																maxHeight:
-																	'100px',
-																minHeight:
-																	'40px',
+																maxHeight: '100px',
+																minHeight: '40px',
 																resize: 'none',
 															}}
 															maxLength='200'
 															placeholder='Add a comment...'
 															value={commentText}
-															onChange={(e) =>
-																setCommentText(
-																	e.target
-																		.value
-																)
-															}
+															onChange={(e) => setCommentText(e.target.value)}
 														></textarea>
 													</Col>
 													<Col className='text-right mt-2'>
-														<Button
-															onClick={
-																addCommentHandler
-															}
-														>
-															Comment
-														</Button>
+														<Button onClick={addCommentHandler}>Comment</Button>
 													</Col>
 												</Row>
 											</ListGroup.Item>
@@ -423,9 +353,7 @@ const EventDetails = ({ match }) => {
 									{event.comments.length > 0 && (
 										<ListGroup variant='flush'>
 											{event.comments.map((comment) => (
-												<ListGroup.Item
-													key={comment._id}
-												>
+												<ListGroup.Item key={comment._id}>
 													<Row>
 														<Col sm={1}>
 															<Image
@@ -438,46 +366,33 @@ const EventDetails = ({ match }) => {
 														<Col
 															sm={10}
 															style={{
-																marginLeft:
-																	'-3%',
+																marginLeft: '-3%',
 															}}
 														>
 															<p
 																style={{
 																	margin: '0',
-																	marginTop:
-																		'-1%',
-																	textDecoration:
-																		'underline',
+																	marginTop: '-1%',
+																	textDecoration: 'underline',
 																}}
 															>
 																{comment.user}
 															</p>
-															<p>
-																{
-																	comment.comment
-																}
-															</p>
+															<p>{comment.comment}</p>
 														</Col>
 														<Col className='text-right'>
 															{comment.hearts}{' '}
-															{isHeartedByUser(
-																comment._id
-															) ? (
+															{isHeartedByUser(comment._id) ? (
 																<i
 																	onClick={() =>
-																		toggleCommentHeartHandler(
-																			comment._id
-																		)
+																		toggleCommentHeartHandler(comment._id)
 																	}
 																	className='fas fa-heart'
 																></i>
 															) : (
 																<i
 																	onClick={() =>
-																		toggleCommentHeartHandler(
-																			comment._id
-																		)
+																		toggleCommentHeartHandler(comment._id)
 																	}
 																	className='fas fa-heart-broken'
 																></i>

@@ -22,6 +22,7 @@ import {
 	userTicketsReducer,
 } from './reducers/ticketsReducer';
 import { adminPromosReducer } from './reducers/promosReducer';
+import { emailsReducer } from './reducers/supportReducer';
 
 const reducer = combineReducers({
 	eventList: eventListReducer,
@@ -41,6 +42,7 @@ const reducer = combineReducers({
 	adminTickets: adminTicketsReducer,
 	adminPromos: adminPromosReducer,
 	userResetPassword: userResetPasswordReducer,
+	emails: emailsReducer,
 });
 
 const getUserInfo = () => {

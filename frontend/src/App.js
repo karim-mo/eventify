@@ -20,6 +20,8 @@ import EditEvent from './views/EditEvent';
 import AddEvent from './views/AddEvent';
 import ForgotPassword from './views/ForgotPassword';
 import ResetPassword from './views/ResetPassword';
+import CreateEventTicket from './views/CreateEventTicket';
+import Support from './views/Support';
 
 const App = () => {
 	return (
@@ -47,6 +49,8 @@ const App = () => {
 				<PrivateRoute path='/dashboard/:key/page/:pageNo' exact component={AdminPage} />
 				<PrivateRoute path='/dashboard/new/create-event' exact component={AddEvent} />
 				<PrivateRoute path='/dashboard/editevent/:id' exact component={EditEvent} />
+				<PrivateRoute path='/createEvent' exact component={CreateEventTicket} />
+				<PrivateRoute path='/contactus' component={Support} />
 			</main>
 			<Footer />
 		</Router>

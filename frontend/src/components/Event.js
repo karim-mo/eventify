@@ -38,26 +38,18 @@ const Event = ({ event }) => {
 						Created By <cite>{event.author}</cite>
 					</Col>
 					<Col sm={12} md={5}>
-						<LinkContainer
-							to={`/event/details/${event._id}`}
-							className='text-white'
-						>
+						<LinkContainer to={`/event/details/${event._id}`} className='text-white'>
 							<a>
-								Check it out{' '}
-								<i className='fas fa-arrow-right'></i>
+								Check it out <i className='fas fa-arrow-right'></i>
 							</a>
 						</LinkContainer>
 					</Col>
 				</Row>
 			</Card.Body>
 			<Card.Footer className='text-muted text-center'>
-				{eventEnded(
-					event.endsOn.day,
-					event.endsOn.month,
-					event.endsOn.year
-				)
-					? `Ended on ${event.endsOn.day} / ${event.endsOn.month} / ${event.endsOn.year}`
-					: `Ends on ${event.endsOn.day} / ${event.endsOn.month} / ${event.endsOn.year}`}
+				{eventEnded(event.endsOn.day, event.endsOn.month, event.endsOn.year)
+					? `Ticket buying ended on ${event.endsOn.day} / ${event.endsOn.month} / ${event.endsOn.year}`
+					: `Ticket buying ends on ${event.endsOn.day} / ${event.endsOn.month} / ${event.endsOn.year}`}
 			</Card.Footer>
 		</Card>
 	);

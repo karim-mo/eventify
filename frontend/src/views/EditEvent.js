@@ -182,7 +182,7 @@ const EditEvent = ({ match, history }) => {
 										></Form.Control>
 									</Form.Group>
 									<Form.Group controlId='image'>
-										<Form.Label>Event Image</Form.Label>
+										<Form.Label>Image</Form.Label>
 										<Form.Control
 											type='text'
 											placeholder='Event Image'
