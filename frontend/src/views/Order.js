@@ -246,7 +246,7 @@ const Order = ({ match, history }) => {
 													{order.totalPrice}
 												</p>
 											) : (
-												order.totalPrice
+												`$${order.totalPrice}`
 											)}
 										</Col>
 									</Row>
