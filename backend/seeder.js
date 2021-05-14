@@ -6,6 +6,7 @@ import events from './data/events.js';
 import User from './models/UserModel.js';
 import Event from './models/EventModel.js';
 import Order from './models/OrderModel.js';
+import Ticket from './models/QRTicketModel.js';
 
 dotenv.config();
 
@@ -30,8 +31,10 @@ connectMongo();
 
 const importData = async () => {
 	try {
-		// await Order.deleteMany();
+		await Order.deleteMany();
 		await Event.deleteMany();
+		await Ticket.deleteMany();
+
 		// await User.deleteMany();
 
 		// const createdUsers = await User.insertMany(users);

@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 const eventCountrySchema = mongoose.Schema({
-	countryName: { type: String, required: true },
 	countryCode: { type: String, required: true },
 });
 
