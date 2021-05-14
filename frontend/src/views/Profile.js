@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-	Table,
-	Form,
-	Button,
-	Row,
-	Col,
-	Container,
-	ListGroup,
-	Image,
-	Tabs,
-	Tab,
-} from 'react-bootstrap';
+import { Table, Form, Button, Row, Col, Container, ListGroup, Image, Tabs, Tab } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -23,9 +12,7 @@ import { getUserTickets } from '../actions/ticketsReducerActions';
 
 const Profile = ({ match, history }) => {
 	const dispatch = useDispatch();
-	const [key, setKey] = useState(
-		match.params.key ? match.params.key : 'orders'
-	);
+	const [key, setKey] = useState(match.params.key ? match.params.key : 'orders');
 
 	const userOrders = useSelector((state) => state.userOrders);
 	const {
@@ -99,16 +86,11 @@ const Profile = ({ match, history }) => {
 			<Row>
 				<Col md={4}>
 					<h2>User Profile</h2>
-					<ListGroup>
+					<ListGroup className='mb-4'>
 						<ListGroup.Item>
 							<Row>
 								<Col style={{ textAlign: 'center' }}>
-									<Image
-										src='/images/avatar.png'
-										fluid
-										rounded
-										width='50%'
-									></Image>
+									<Image src='/images/avatar.png' fluid rounded width='50%'></Image>
 								</Col>
 							</Row>
 						</ListGroup.Item>
@@ -117,9 +99,7 @@ const Profile = ({ match, history }) => {
 								<Col sm={2} md={2}>
 									Name:
 								</Col>
-								<Col style={{ textAlign: 'right' }}>
-									{user.name}
-								</Col>
+								<Col style={{ textAlign: 'right' }}>{user.name}</Col>
 							</Row>
 						</ListGroup.Item>
 						<ListGroup.Item>
@@ -127,9 +107,7 @@ const Profile = ({ match, history }) => {
 								<Col sm={2} md={2}>
 									Email:
 								</Col>
-								<Col style={{ textAlign: 'right' }}>
-									{user.email}
-								</Col>
+								<Col style={{ textAlign: 'right' }}>{user.email}</Col>
 							</Row>
 						</ListGroup.Item>
 						<ListGroup.Item>
@@ -137,9 +115,7 @@ const Profile = ({ match, history }) => {
 								<Col sm={5} md={5}>
 									Country Code:
 								</Col>
-								<Col style={{ textAlign: 'right' }}>
-									{user.country}
-								</Col>
+								<Col style={{ textAlign: 'right' }}>{user.country}</Col>
 							</Row>
 						</ListGroup.Item>
 						<ListGroup.Item>
@@ -147,9 +123,7 @@ const Profile = ({ match, history }) => {
 								<Col sm={4} md={4}>
 									Joined on:
 								</Col>
-								<Col style={{ textAlign: 'right' }}>
-									{user.joinedOn.slice(0, 10)}
-								</Col>
+								<Col style={{ textAlign: 'right' }}>{user.joinedOn.slice(0, 10)}</Col>
 							</Row>
 						</ListGroup.Item>
 					</ListGroup>
@@ -161,18 +135,10 @@ const Profile = ({ match, history }) => {
 							{ordersLoading ? (
 								<Loading />
 							) : ordersError ? (
-								<ErrorMessage variant='info'>
-									{ordersError}
-								</ErrorMessage>
+								<ErrorMessage variant='info'>{ordersError}</ErrorMessage>
 							) : (
 								<>
-									<Table
-										striped
-										bordered
-										hover
-										responsive
-										className='table-sm'
-									>
+									<Table striped bordered hover responsive className='table-sm'>
 										<thead>
 											<tr>
 												<th>ID</th>
@@ -185,25 +151,11 @@ const Profile = ({ match, history }) => {
 											{orders.map((order) => (
 												<tr key={order._id}>
 													<td>
-														<Link
-															to={`/orders/${order._id}`}
-														>
-															{order._id}
-														</Link>
+														<Link to={`/orders/${order._id}`}>{order._id}</Link>
 													</td>
-													<td>
-														{order.createdAt.slice(
-															0,
-															10
-														)}
-													</td>
+													<td>{order.createdAt.slice(0, 10)}</td>
 													<td>${order.totalPrice}</td>
-													<td>
-														{
-															order.paymentDetails
-																.status
-														}
-													</td>
+													<td>{order.paymentDetails.status}</td>
 												</tr>
 											))}
 										</tbody>
@@ -222,18 +174,10 @@ const Profile = ({ match, history }) => {
 							{ticketsLoading ? (
 								<Loading />
 							) : ticketsError ? (
-								<ErrorMessage variant='info'>
-									{ticketsError}
-								</ErrorMessage>
+								<ErrorMessage variant='info'>{ticketsError}</ErrorMessage>
 							) : (
 								<>
-									<Table
-										striped
-										bordered
-										hover
-										responsive
-										className='table-sm'
-									>
+									<Table striped bordered hover responsive className='table-sm'>
 										<thead>
 											<tr>
 												<th>ID</th>
@@ -245,22 +189,13 @@ const Profile = ({ match, history }) => {
 											{tickets.map((ticket) => (
 												<tr key={ticket._id}>
 													<td>
-														<Link
-															to={`/ticket/details/${ticket._id}`}
-														>
+														<Link to={`/ticket/details/${ticket._id}`}>
 															{ticket._id}
 														</Link>
 													</td>
+													<td>{ticket.createdAt.slice(0, 10)}</td>
 													<td>
-														{ticket.createdAt.slice(
-															0,
-															10
-														)}
-													</td>
-													<td>
-														<Link
-															to={`/event/details/${ticket.eventID}`}
-														>
+														<Link to={`/event/details/${ticket.eventID}`}>
 															{ticket.eventName}
 														</Link>
 													</td>
@@ -282,18 +217,10 @@ const Profile = ({ match, history }) => {
 							{eventsLoading ? (
 								<Loading />
 							) : eventsError ? (
-								<ErrorMessage variant='info'>
-									{eventsError}
-								</ErrorMessage>
+								<ErrorMessage variant='info'>{eventsError}</ErrorMessage>
 							) : (
 								<>
-									<Table
-										striped
-										bordered
-										hover
-										responsive
-										className='table-sm'
-									>
+									<Table striped bordered hover responsive className='table-sm'>
 										<thead>
 											<tr>
 												<th>ID</th>
@@ -308,47 +235,23 @@ const Profile = ({ match, history }) => {
 											{events.map((event) => (
 												<tr key={event._id}>
 													<td>
-														<Link
-															to={`/event/details/${event._id}`}
-														>
+														<Link to={`/event/details/${event._id}`}>
 															{event._id}
 														</Link>
 													</td>
-													<td>
-														{event.createdAt.slice(
-															0,
-															10
-														)}
-													</td>
+													<td>{event.createdAt.slice(0, 10)}</td>
 													<td>{`${
 														event.endsOn.year
-													}-${event.endsOn.month.toLocaleString(
-														'en-US',
-														{
-															minimumIntegerDigits: 2,
-															useGrouping: false,
-														}
-													)}-${event.endsOn.day.toLocaleString(
-														'en-US',
-														{
-															minimumIntegerDigits: 2,
-															useGrouping: false,
-														}
-													)}`}</td>
-													<td>
-														{
-															event.joinedUsers
-																.length
-														}
-													</td>
-													<td>
-														{event.availableTickets}
-													</td>
-													<td>
-														{event.virtual
-															? 'Yes'
-															: 'No'}
-													</td>
+													}-${event.endsOn.month.toLocaleString('en-US', {
+														minimumIntegerDigits: 2,
+														useGrouping: false,
+													})}-${event.endsOn.day.toLocaleString('en-US', {
+														minimumIntegerDigits: 2,
+														useGrouping: false,
+													})}`}</td>
+													<td>{event.joinedUsers.length}</td>
+													<td>{event.availableTickets}</td>
+													<td>{event.virtual ? 'Yes' : 'No'}</td>
 												</tr>
 											))}
 										</tbody>
