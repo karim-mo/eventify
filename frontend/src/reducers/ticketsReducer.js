@@ -1,4 +1,7 @@
 import {
+	ADMIN_TICKETS_FAIL,
+	ADMIN_TICKETS_REQUEST,
+	ADMIN_TICKETS_SUCCESS,
 	PUBLIC_TICKET_DETAILS_FAIL,
 	PUBLIC_TICKET_DETAILS_REQUEST,
 	PUBLIC_TICKET_DETAILS_SUCCESS,
@@ -53,10 +56,7 @@ export const ticketDetailsReducer = (state = { loading: true }, action) => {
 	}
 };
 
-export const publicTicketDetailsReducer = (
-	state = { loading: true },
-	action
-) => {
+export const publicTicketDetailsReducer = (state = { loading: true }, action) => {
 	switch (action.type) {
 		case PUBLIC_TICKET_DETAILS_REQUEST:
 			return { loading: true };
@@ -67,6 +67,28 @@ export const publicTicketDetailsReducer = (
 				ticket: action.payload,
 			};
 		case PUBLIC_TICKET_DETAILS_FAIL:
+			return {
+				loading: false,
+				fetched: false,
+				error: action.payload,
+			};
+		default:
+			return state;
+	}
+};
+
+export const adminTicketsReducer = (state = { loading: true }, action) => {
+	switch (action.type) {
+		case ADMIN_TICKETS_REQUEST:
+			return { loading: true };
+		case ADMIN_TICKETS_SUCCESS:
+			return {
+				loading: false,
+				fetched: true,
+				tickets: action.payload.tickets,
+				pages: action.payload.pages,
+			};
+		case ADMIN_TICKETS_FAIL:
 			return {
 				loading: false,
 				fetched: false,
