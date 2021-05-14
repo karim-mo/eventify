@@ -3,28 +3,71 @@ import asyncHandler from 'express-async-handler';
 import { admin, protect } from '../middleware/auth.js';
 import Event from '../models/EventModel.js';
 import User from '../models/UserModel.js';
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
 const getEvents = asyncHandler(async (req, res) => {
 	const eventsPerPage = 10;
 	const pageNo = Number(req.query.pageNo) || 1;
+	if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+		try {
+			const token = req.headers.authorization.split(' ')[1];
 
-	const eventCount = await Event.countDocuments({});
-	if (eventCount) {
-		const pages = Math.ceil(eventCount / eventsPerPage);
-		if (pages < pageNo) {
+			const decoded = jwt.verify(token, process.env.JWT_KEY);
+
+			const user = await User.findById(decoded.id);
+
+			const eventCount = await Event.countDocuments({
+				$or: [
+					{ eventCountry: { $elemMatch: { countryCode: user.country } } },
+					{ eventCountry: { $elemMatch: { countryCode: 'GLOBAL' } } },
+				],
+			});
+			if (eventCount) {
+				const pages = Math.ceil(eventCount / eventsPerPage);
+				if (pages < pageNo) {
+					throw new Error('No events to show');
+				}
+
+				const events = await Event.find({
+					$or: [
+						{ eventCountry: { $elemMatch: { countryCode: user.country } } },
+						{ eventCountry: { $elemMatch: { countryCode: 'GLOBAL' } } },
+					],
+				})
+					.limit(eventsPerPage)
+					.skip(eventsPerPage * (pageNo - 1));
+
+				res.json({ events, pages });
+			} else {
+				throw new Error('No events to show');
+			}
+		} catch (error) {
+			if (error.message.startsWith('No')) {
+				res.status(404);
+				throw new Error(error.message);
+			}
+			res.status(401);
+			throw new Error('Not authorized, token failed');
+		}
+	} else {
+		const eventCount = await Event.countDocuments({});
+		if (eventCount) {
+			const pages = Math.ceil(eventCount / eventsPerPage);
+			if (pages < pageNo) {
+				res.status(404);
+				throw new Error('No events to show');
+			}
+			const events = await Event.find({})
+				.limit(eventsPerPage)
+				.skip(eventsPerPage * (pageNo - 1));
+
+			res.json({ events, pages });
+		} else {
 			res.status(404);
 			throw new Error('No events to show');
 		}
-		const events = await Event.find({})
-			.limit(eventsPerPage)
-			.skip(eventsPerPage * (pageNo - 1));
-
-		res.json({ events, pages });
-	} else {
-		res.status(404);
-		throw new Error('No events to show');
 	}
 });
 
@@ -106,7 +149,30 @@ const toggleCommentHeart = asyncHandler(async (req, res) => {
 const getEvent = asyncHandler(async (req, res) => {
 	const event = await Event.findById(req.params.id);
 	if (event) {
-		res.json(event);
+		if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+			try {
+				const token = req.headers.authorization.split(' ')[1];
+
+				const decoded = jwt.verify(token, process.env.JWT_KEY);
+
+				const user = await User.findById(decoded.id);
+
+				if (
+					!event.eventCountry.find(
+						(cc) => cc.countryCode === user.country || cc.countryCode === 'GLOBAL'
+					)
+				) {
+					throw new Error('User unauthorized');
+				}
+
+				res.json(event);
+			} catch (error) {
+				res.status(401);
+				throw new Error('Not authorized');
+			}
+		} else {
+			res.json(event);
+		}
 	} else {
 		res.status(404);
 		throw new Error('Event not found');

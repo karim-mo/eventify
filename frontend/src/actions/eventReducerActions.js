@@ -28,7 +28,22 @@ export const listEvents = (pageNo) => async (dispatch, getState) => {
 			type: EVENT_LIST_REQUEST,
 		});
 
-		const { data } = await axios.get(`/v3/events?pageNo=${pageNo}`);
+		const {
+			userInfo: { user },
+		} = getState();
+
+		if (user) {
+			const config = {
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${user.token}`,
+				},
+			};
+
+			var { data } = await axios.get(`/v3/events?pageNo=${pageNo}`, config);
+		} else {
+			var { data } = await axios.get(`/v3/events?pageNo=${pageNo}`);
+		}
 
 		dispatch({
 			type: EVENT_LIST_SUCCESS,
@@ -47,8 +62,22 @@ export const getEventDetails = (id) => async (dispatch, getState) => {
 		dispatch({
 			type: EVENT_DETAILS_REQUEST,
 		});
+		const {
+			userInfo: { user },
+		} = getState();
 
-		const { data } = await axios.get(`/v3/events/${id}`);
+		if (user) {
+			const config = {
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${user.token}`,
+				},
+			};
+
+			var { data } = await axios.get(`/v3/events/${id}`, config);
+		} else {
+			var { data } = await axios.get(`/v3/events/${id}`);
+		}
 
 		dispatch({
 			type: EVENT_DETAILS_SUCCESS,
