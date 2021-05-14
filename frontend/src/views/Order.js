@@ -2,17 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { PayPalButton } from 'react-paypal-button-v2';
 import { Link } from 'react-router-dom';
-import {
-	Row,
-	Col,
-	ListGroup,
-	Image,
-	Card,
-	Button,
-	Container,
-	Form,
-	Modal,
-} from 'react-bootstrap';
+import { Row, Col, ListGroup, Image, Card, Button, Container, Form, Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import ErrorMessage from '../components/ErrorMessage';
 import {
@@ -21,6 +11,7 @@ import {
 	applyPromoCode,
 } from '../actions/orderReducerActions';
 import Loading from '../components/Loading';
+import Meta from '../components/Meta';
 
 const Order = ({ match, history }) => {
 	const dispatch = useDispatch();
@@ -91,21 +82,14 @@ const Order = ({ match, history }) => {
 				},
 			};
 
-			const { data: response } = await axios.get(
-				`/v3/orders/paypal/${order.id}`,
-				config
-			);
+			const { data: response } = await axios.get(`/v3/orders/paypal/${order.id}`, config);
 			if (response.message) {
 				throw new Error(response.message);
 			}
 
 			token = response.paymentID;
 		} catch (e) {
-			setPaymentError(
-				e.response && e.response.data.message
-					? e.response.data.message
-					: e.message
-			);
+			setPaymentError(e.response && e.response.data.message ? e.response.data.message : e.message);
 		} finally {
 			if (!token) token = 'NULL';
 			return token;
@@ -134,11 +118,7 @@ const Order = ({ match, history }) => {
 			}
 			dispatch(getOrderDetails_NoCapture(order.id));
 		} catch (e) {
-			setPaymentError(
-				e.response && e.response.data.message
-					? e.response.data.message
-					: e.message
-			);
+			setPaymentError(e.response && e.response.data.message ? e.response.data.message : e.message);
 		}
 	};
 
@@ -150,14 +130,10 @@ const Order = ({ match, history }) => {
 						<Modal.Title>Attention!</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
-						Applying a promocode is permanent and irreversible for
-						this current order, Proceed?
+						Applying a promocode is permanent and irreversible for this current order, Proceed?
 					</Modal.Body>
 					<Modal.Footer>
-						<Button
-							variant='secondary'
-							onClick={() => setPromoModal(false)}
-						>
+						<Button variant='secondary' onClick={() => setPromoModal(false)}>
 							Close
 						</Button>
 						<Button variant='primary' onClick={applyPromoHandler}>
@@ -166,15 +142,14 @@ const Order = ({ match, history }) => {
 					</Modal.Footer>
 				</Modal>
 			)}
-			{paymentError && (
-				<ErrorMessage variant='danger'>{paymentError}</ErrorMessage>
-			)}
+			{paymentError && <ErrorMessage variant='danger'>{paymentError}</ErrorMessage>}
 			{loading ? (
 				<Loading />
 			) : error && !error.startsWith('Promo') ? (
 				<ErrorMessage variant='danger'>{error}</ErrorMessage>
 			) : (
 				<>
+					<Meta title={`Eventify | Order #${order._id}`} />
 					<h1>Order #{order.id}</h1>
 					<Row>
 						<Col md={8}>
@@ -186,59 +161,41 @@ const Order = ({ match, history }) => {
 									</p>
 									<p>
 										<strong>Email: </strong>{' '}
-										<a href={`mailto:${order.email}`}>
-											{order.email}
-										</a>
+										<a href={`mailto:${order.email}`}>{order.email}</a>
 									</p>
 								</ListGroup.Item>
 
 								<ListGroup.Item>
 									<h2>Order Status</h2>
-									{order.paymentDetails.status ===
-									'PENDING' ? (
-										<ErrorMessage variant='info'>
-											STATUS: AWAITING PAYMENT
-										</ErrorMessage>
-									) : order.paymentDetails.status ===
-									  'APPROVED' ? (
+									{order.paymentDetails.status === 'PENDING' ? (
+										<ErrorMessage variant='info'>STATUS: AWAITING PAYMENT</ErrorMessage>
+									) : order.paymentDetails.status === 'APPROVED' ? (
 										<ErrorMessage variant='warning'>
 											STATUS: PROCESSING PAYMENT
 										</ErrorMessage>
-									) : order.paymentDetails.status ===
-									  'CANCELLED' ? (
-										<ErrorMessage variant='danger'>
-											STATUS: CANCELLED
-										</ErrorMessage>
+									) : order.paymentDetails.status === 'CANCELLED' ? (
+										<ErrorMessage variant='danger'>STATUS: CANCELLED</ErrorMessage>
 									) : (
-										<ErrorMessage variant='success'>
-											STATUS: COMPLETED
-										</ErrorMessage>
+										<ErrorMessage variant='success'>STATUS: COMPLETED</ErrorMessage>
 									)}
 								</ListGroup.Item>
 
 								<ListGroup.Item>
 									<h2>Order Items</h2>
 									{order.orderItems.length === 0 ? (
-										<ErrorMessage variant='info'>
-											Order is empty.
-										</ErrorMessage>
+										<ErrorMessage variant='info'>Order is empty.</ErrorMessage>
 									) : (
 										<ListGroup variant='flush'>
 											{order.orderItems.map((ticket) => (
-												<ListGroup.Item
-													key={ticket._id}
-												>
+												<ListGroup.Item key={ticket._id}>
 													<Row>
 														<Col xs={10} md={10}>
-															<Link
-																to={`/event/details/${ticket.eventID}`}
-															>
+															<Link to={`/event/details/${ticket.eventID}`}>
 																{ticket.name}
 															</Link>
 														</Col>
 														<Col xs={2} md={2}>
-															$
-															{ticket.ticketPrice}
+															${ticket.ticketPrice}
 														</Col>
 													</Row>
 												</ListGroup.Item>
@@ -279,19 +236,14 @@ const Order = ({ match, history }) => {
 											Total
 										</Col>
 										<Col xs={2} md={4}>
-											{order.totalPrice !=
-											order.fees + order.itemsPrice ? (
+											{order.totalPrice != order.fees + order.itemsPrice ? (
 												<p
 													style={{
 														display: 'inline',
 													}}
 												>
-													<strike>
-														$
-														{order.fees +
-															order.itemsPrice}
-													</strike>{' '}
-													${order.totalPrice}
+													<strike>${order.fees + order.itemsPrice}</strike> $
+													{order.totalPrice}
 												</p>
 											) : (
 												order.totalPrice
@@ -310,49 +262,32 @@ const Order = ({ match, history }) => {
 												<Col xs={10} md={8}>
 													<Form.Group controlId='email'>
 														<Form.Control
-															disabled={
-																order.promoCode !==
-																'n/a'
-															}
+															disabled={order.promoCode !== 'n/a'}
 															className={
-																order.promoCode !==
-																'n/a'
+																order.promoCode !== 'n/a'
 																	? 'form-control is-valid'
 																	: ''
 															}
 															type='text'
 															placeholder='Promo Code'
 															value={
-																order.promoCode !==
-																'n/a'
+																order.promoCode !== 'n/a'
 																	? order.promoCode
 																	: promo
 															}
-															onChange={(e) =>
-																setPromo(
-																	e.target
-																		.value
-																)
-															}
+															onChange={(e) => setPromo(e.target.value)}
 														></Form.Control>
-														{order.promoCode !=
-															'n/a' && (
+														{order.promoCode != 'n/a' && (
 															<div className='valid-feedback'>
-																Promocode
-																Applied.
+																Promocode Applied.
 															</div>
 														)}
 													</Form.Group>
 												</Col>
 												<Col xs={2} md={4}>
 													<Button
-														disabled={
-															order.promoCode !==
-															'n/a'
-														}
-														onClick={
-															ShowPromoModalHandler
-														}
+														disabled={order.promoCode !== 'n/a'}
+														onClick={ShowPromoModalHandler}
 													>
 														Apply
 													</Button>
@@ -369,12 +304,8 @@ const Order = ({ match, history }) => {
 									) : (
 										<ListGroup.Item>
 											<PayPalButton
-												createOrder={(data, actions) =>
-													createOrder(data, actions)
-												}
-												onApprove={(data, actions) =>
-													onApprove(data, actions)
-												}
+												createOrder={(data, actions) => createOrder(data, actions)}
+												onApprove={(data, actions) => onApprove(data, actions)}
 											/>
 										</ListGroup.Item>
 									)

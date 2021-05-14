@@ -9,6 +9,7 @@ import Fade from '@material-ui/core/Fade';
 import { sendUserConfirmation, reSendUserConfirmation } from '../actions/confirmationReducerActions';
 import { USER_CONFIRMATION_RESET } from '../types';
 import countryList from 'react-select-country-list';
+import Meta from '../components/Meta';
 
 const Register = ({ location, history }) => {
 	const [name, setName] = useState('');
@@ -76,157 +77,160 @@ const Register = ({ location, history }) => {
 	};
 
 	return (
-		<Fade in={true}>
-			<Container>
-				{confirmError && (
-					<Row className='justify-content-md-center'>
-						<Col xs={12} md={6}>
-							<ErrorMessage variant='danger'>{confirmError}</ErrorMessage>
-						</Col>
-					</Row>
-				)}
-				{confirmLoading ? (
-					<Loading />
-				) : reSend ? (
-					<>
-						<Row>
-							<Col>
-								<Card>
-									<Card.Header className='text-center'>
-										<h2>Confirmation Already Sent!</h2>
-									</Card.Header>
-									<Card.Body className='text-center'>
-										We've previously sent an email to {email} for confirmation, please
-										click the link sent to you to finish the registration process and be
-										able to use Eventify's Services.
-										<br />
-										<br />
-										If you haven't received an email, click{' '}
-										<Link to='/register' onClick={reSendConfirmationHandler}>
-											Here
-										</Link>{' '}
-										to send another one!
-										<br />
-										<br />
-										<strong>Note: </strong> Make sure to check your spam folder too if you
-										didn't receive an email!
-										<br />
-										<br />
-										If any problems occur,{' '}
-										<Link to='/contactus'> send us an inquiry</Link> We'll be happy to
-										assist!
-									</Card.Body>
-								</Card>
-							</Col>
-						</Row>
-					</>
-				) : awaitingConfirmation ? (
-					<>
-						<Row>
-							<Col>
-								<Card>
-									<Card.Header className='text-center'>
-										<h2>Confirmation Sent!</h2>
-									</Card.Header>
-									<Card.Body className='text-center'>
-										We've sent an email to {email} for confirmation, please click the link
-										sent to you to finish the registration process and be able to use
-										Eventify's Services.
-										<br />
-										<br />
-										<strong>Note: </strong> Make sure to check your spam folder too if you
-										didn't receive an email!
-										<br />
-										<br />
-										If any problems occur,{' '}
-										<Link to='/contactus'> send us an inquiry</Link> We'll be happy to
-										assist!
-									</Card.Body>
-								</Card>
-							</Col>
-						</Row>
-					</>
-				) : (
-					<>
+		<>
+			<Meta title='Eventify | Registration' />
+			<Fade in={true}>
+				<Container>
+					{confirmError && (
 						<Row className='justify-content-md-center'>
 							<Col xs={12} md={6}>
-								<h1>Sign Up</h1>
-								{loading && <Loading />}
-								{error && <ErrorMessage variant='danger'>{error}</ErrorMessage>}
-								{message && <ErrorMessage variant='danger'>{message}</ErrorMessage>}
-								<Form onSubmit={submitHandler}>
-									<Form.Group controlId='name'>
-										<Form.Label>Name</Form.Label>
-										<Form.Control
-											type='name'
-											placeholder='Enter name'
-											value={name}
-											onChange={(e) => setName(e.target.value)}
-										></Form.Control>
-									</Form.Group>
-
-									<Form.Group controlId='email'>
-										<Form.Label>Email Address</Form.Label>
-										<Form.Control
-											type='email'
-											placeholder='Enter email'
-											value={email}
-											onChange={(e) => setEmail(e.target.value)}
-										></Form.Control>
-									</Form.Group>
-
-									<Form.Group controlId='password'>
-										<Form.Label>Password</Form.Label>
-										<Form.Control
-											type='password'
-											placeholder='Enter password'
-											value={password}
-											onChange={(e) => setPassword(e.target.value)}
-										></Form.Control>
-									</Form.Group>
-
-									<Form.Group controlId='confirmPassword'>
-										<Form.Label>Confirm Password</Form.Label>
-										<Form.Control
-											type='password'
-											placeholder='Confirm password'
-											value={confirmPassword}
-											onChange={(e) => setConfirmPassword(e.target.value)}
-										></Form.Control>
-									</Form.Group>
-
-									<Form.Group controlId='country'>
-										<Form.Label>Country Code</Form.Label>
-										<Form.Control
-											as='select'
-											value={CC}
-											onChange={(e) => setCC(e.target.value)}
-										>
-											{options.map((option, index) => (
-												<option key={index}>{`${option.value}`}</option>
-											))}
-										</Form.Control>
-									</Form.Group>
-
-									<Button type='submit' variant='primary'>
-										Register
-									</Button>
-								</Form>
-
-								<Row className='py-3'>
-									<Col>
-										Have an Account?{' '}
-										<Link to={redirect ? `/login?redirect=${redirect}` : '/login'}>
-											Login
-										</Link>
-									</Col>
-								</Row>
+								<ErrorMessage variant='danger'>{confirmError}</ErrorMessage>
 							</Col>
 						</Row>
-					</>
-				)}
-			</Container>
-		</Fade>
+					)}
+					{confirmLoading ? (
+						<Loading />
+					) : reSend ? (
+						<>
+							<Row>
+								<Col>
+									<Card>
+										<Card.Header className='text-center'>
+											<h2>Confirmation Already Sent!</h2>
+										</Card.Header>
+										<Card.Body className='text-center'>
+											We've previously sent an email to {email} for confirmation, please
+											click the link sent to you to finish the registration process and
+											be able to use Eventify's Services.
+											<br />
+											<br />
+											If you haven't received an email, click{' '}
+											<Link to='/register' onClick={reSendConfirmationHandler}>
+												Here
+											</Link>{' '}
+											to send another one!
+											<br />
+											<br />
+											<strong>Note: </strong> Make sure to check your spam folder too if
+											you didn't receive an email!
+											<br />
+											<br />
+											If any problems occur,{' '}
+											<Link to='/contactus'> send us an inquiry</Link> We'll be happy to
+											assist!
+										</Card.Body>
+									</Card>
+								</Col>
+							</Row>
+						</>
+					) : awaitingConfirmation ? (
+						<>
+							<Row>
+								<Col>
+									<Card>
+										<Card.Header className='text-center'>
+											<h2>Confirmation Sent!</h2>
+										</Card.Header>
+										<Card.Body className='text-center'>
+											We've sent an email to {email} for confirmation, please click the
+											link sent to you to finish the registration process and be able to
+											use Eventify's Services.
+											<br />
+											<br />
+											<strong>Note: </strong> Make sure to check your spam folder too if
+											you didn't receive an email!
+											<br />
+											<br />
+											If any problems occur,{' '}
+											<Link to='/contactus'> send us an inquiry</Link> We'll be happy to
+											assist!
+										</Card.Body>
+									</Card>
+								</Col>
+							</Row>
+						</>
+					) : (
+						<>
+							<Row className='justify-content-md-center'>
+								<Col xs={12} md={6}>
+									<h1>Sign Up</h1>
+									{loading && <Loading />}
+									{error && <ErrorMessage variant='danger'>{error}</ErrorMessage>}
+									{message && <ErrorMessage variant='danger'>{message}</ErrorMessage>}
+									<Form onSubmit={submitHandler}>
+										<Form.Group controlId='name'>
+											<Form.Label>Name</Form.Label>
+											<Form.Control
+												type='name'
+												placeholder='Enter name'
+												value={name}
+												onChange={(e) => setName(e.target.value)}
+											></Form.Control>
+										</Form.Group>
+
+										<Form.Group controlId='email'>
+											<Form.Label>Email Address</Form.Label>
+											<Form.Control
+												type='email'
+												placeholder='Enter email'
+												value={email}
+												onChange={(e) => setEmail(e.target.value)}
+											></Form.Control>
+										</Form.Group>
+
+										<Form.Group controlId='password'>
+											<Form.Label>Password</Form.Label>
+											<Form.Control
+												type='password'
+												placeholder='Enter password'
+												value={password}
+												onChange={(e) => setPassword(e.target.value)}
+											></Form.Control>
+										</Form.Group>
+
+										<Form.Group controlId='confirmPassword'>
+											<Form.Label>Confirm Password</Form.Label>
+											<Form.Control
+												type='password'
+												placeholder='Confirm password'
+												value={confirmPassword}
+												onChange={(e) => setConfirmPassword(e.target.value)}
+											></Form.Control>
+										</Form.Group>
+
+										<Form.Group controlId='country'>
+											<Form.Label>Country Code</Form.Label>
+											<Form.Control
+												as='select'
+												value={CC}
+												onChange={(e) => setCC(e.target.value)}
+											>
+												{options.map((option, index) => (
+													<option key={index}>{`${option.value}`}</option>
+												))}
+											</Form.Control>
+										</Form.Group>
+
+										<Button type='submit' variant='primary'>
+											Register
+										</Button>
+									</Form>
+
+									<Row className='py-3'>
+										<Col>
+											Have an Account?{' '}
+											<Link to={redirect ? `/login?redirect=${redirect}` : '/login'}>
+												Login
+											</Link>
+										</Col>
+									</Row>
+								</Col>
+							</Row>
+						</>
+					)}
+				</Container>
+			</Fade>
+		</>
 	);
 };
 

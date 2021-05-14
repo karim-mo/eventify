@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { getTicketDetails } from '../actions/ticketsReducerActions';
 import ErrorMessage from '../components/ErrorMessage';
 import Loading from '../components/Loading';
+import Meta from '../components/Meta';
 
 const Ticket = ({ match }) => {
 	const dispatch = useDispatch();
@@ -25,6 +26,7 @@ const Ticket = ({ match }) => {
 				<ErrorMessage variant='danger'>{error}</ErrorMessage>
 			) : (
 				<Row>
+					<Meta title={`Eventify | ${ticket.event_name} Ticket`} />
 					<Col>
 						<Card>
 							<Card.Header className='text-center'>
@@ -39,9 +41,7 @@ const Ticket = ({ match }) => {
 													<Col xs={5} md={5}>
 														Ticket Owner:
 													</Col>
-													<Col className='text-right'>
-														{ticket.owner}
-													</Col>
+													<Col className='text-right'>{ticket.owner}</Col>
 												</Row>
 											</ListGroup.Item>
 											<ListGroup.Item className=''>
@@ -49,9 +49,7 @@ const Ticket = ({ match }) => {
 													<Col xs={5} md={5}>
 														Email:
 													</Col>
-													<Col className='text-right'>
-														{ticket.owner_email}
-													</Col>
+													<Col className='text-right'>{ticket.owner_email}</Col>
 												</Row>
 											</ListGroup.Item>
 										</ListGroup>
@@ -62,9 +60,7 @@ const Ticket = ({ match }) => {
 													<Col xs={5} md={5}>
 														Owner ID:
 													</Col>
-													<Col className='text-right'>
-														{ticket.owner_id}
-													</Col>
+													<Col className='text-right'>{ticket.owner_id}</Col>
 												</Row>
 											</ListGroup.Item>
 											<ListGroup.Item className=''>
@@ -72,9 +68,7 @@ const Ticket = ({ match }) => {
 													<Col xs={5} md={5}>
 														Ticket ID:
 													</Col>
-													<Col className='text-right'>
-														{ticket.ticket_id}
-													</Col>
+													<Col className='text-right'>{ticket.ticket_id}</Col>
 												</Row>
 											</ListGroup.Item>
 										</ListGroup>

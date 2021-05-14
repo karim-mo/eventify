@@ -17,31 +17,47 @@ const getEvents = asyncHandler(async (req, res) => {
 			const decoded = jwt.verify(token, process.env.JWT_KEY);
 
 			const user = await User.findById(decoded.id);
-
-			const eventCount = await Event.countDocuments({
-				$or: [
-					{ eventCountry: { $elemMatch: { countryCode: user.country } } },
-					{ eventCountry: { $elemMatch: { countryCode: 'GLOBAL' } } },
-				],
-			});
-			if (eventCount) {
-				const pages = Math.ceil(eventCount / eventsPerPage);
-				if (pages < pageNo) {
-					throw new Error('No events to show');
-				}
-
-				const events = await Event.find({
+			if (!user.admin) {
+				const eventCount = await Event.countDocuments({
 					$or: [
 						{ eventCountry: { $elemMatch: { countryCode: user.country } } },
 						{ eventCountry: { $elemMatch: { countryCode: 'GLOBAL' } } },
 					],
-				})
-					.limit(eventsPerPage)
-					.skip(eventsPerPage * (pageNo - 1));
+				});
+				if (eventCount) {
+					const pages = Math.ceil(eventCount / eventsPerPage);
+					if (pages < pageNo) {
+						throw new Error('No events to show');
+					}
 
-				res.json({ events, pages });
+					const events = await Event.find({
+						$or: [
+							{ eventCountry: { $elemMatch: { countryCode: user.country } } },
+							{ eventCountry: { $elemMatch: { countryCode: 'GLOBAL' } } },
+						],
+					})
+						.limit(eventsPerPage)
+						.skip(eventsPerPage * (pageNo - 1));
+
+					res.json({ events, pages });
+				} else {
+					throw new Error('No events to show');
+				}
 			} else {
-				throw new Error('No events to show');
+				const eventCount = await Event.countDocuments({});
+				if (eventCount) {
+					const pages = Math.ceil(eventCount / eventsPerPage);
+					if (pages < pageNo) {
+						throw new Error('No events to show');
+					}
+					const events = await Event.find({})
+						.limit(eventsPerPage)
+						.skip(eventsPerPage * (pageNo - 1));
+
+					res.json({ events, pages });
+				} else {
+					throw new Error('No events to show');
+				}
 			}
 		} catch (error) {
 			if (error.message.startsWith('No')) {
@@ -160,7 +176,8 @@ const getEvent = asyncHandler(async (req, res) => {
 				if (
 					!event.eventCountry.find(
 						(cc) => cc.countryCode === user.country || cc.countryCode === 'GLOBAL'
-					)
+					) &&
+					!user.admin
 				) {
 					throw new Error('User unauthorized');
 				}

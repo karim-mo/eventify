@@ -7,6 +7,7 @@ import ErrorMessage from '../components/ErrorMessage';
 import { loginUser } from '../actions/userReducerActions';
 import Fade from '@material-ui/core/Fade';
 import { resetPassword_P2 } from '../actions/confirmationReducerActions';
+import Meta from '../components/Meta';
 
 const ResetPassword = ({ match }) => {
 	const dispatch = useDispatch();
@@ -49,42 +50,47 @@ const ResetPassword = ({ match }) => {
 	};
 
 	return (
-		<Fade in={true}>
-			<Container>
-				<Row className='justify-content-md-center'>
-					<Col xs={12} md={6}>
-						<h1>Reset Password</h1>
-						{loading && <Loading />}
-						{successMessage && <ErrorMessage variant='success'>{successMessage}</ErrorMessage>}
-						{errorMessage && <ErrorMessage variant='danger'>{errorMessage}</ErrorMessage>}
-						{error && <ErrorMessage variant='danger'>{error}</ErrorMessage>}
-						<Form onSubmit={submitHandler}>
-							<Form.Group controlId='password'>
-								<Form.Label>Password</Form.Label>
-								<Form.Control
-									type='password'
-									placeholder='Enter password'
-									value={password}
-									onChange={(e) => setPassword(e.target.value)}
-								></Form.Control>
-							</Form.Group>
-							<Form.Group controlId='text'>
-								<Form.Label>Confirm Password</Form.Label>
-								<Form.Control
-									type='password'
-									placeholder='Confirm password'
-									value={confirmPassword}
-									onChange={(e) => setConfirmPassword(e.target.value)}
-								></Form.Control>
-							</Form.Group>
-							<Button style={{ width: '100%' }} type='submit' variant='primary'>
-								Change Password
-							</Button>
-						</Form>
-					</Col>
-				</Row>
-			</Container>
-		</Fade>
+		<>
+			<Meta title='Eventify | Reset Your Password' />
+			<Fade in={true}>
+				<Container>
+					<Row className='justify-content-md-center'>
+						<Col xs={12} md={6}>
+							<h1>Reset Password</h1>
+							{loading && <Loading />}
+							{successMessage && (
+								<ErrorMessage variant='success'>{successMessage}</ErrorMessage>
+							)}
+							{errorMessage && <ErrorMessage variant='danger'>{errorMessage}</ErrorMessage>}
+							{error && <ErrorMessage variant='danger'>{error}</ErrorMessage>}
+							<Form onSubmit={submitHandler}>
+								<Form.Group controlId='password'>
+									<Form.Label>Password</Form.Label>
+									<Form.Control
+										type='password'
+										placeholder='Enter password'
+										value={password}
+										onChange={(e) => setPassword(e.target.value)}
+									></Form.Control>
+								</Form.Group>
+								<Form.Group controlId='text'>
+									<Form.Label>Confirm Password</Form.Label>
+									<Form.Control
+										type='password'
+										placeholder='Confirm password'
+										value={confirmPassword}
+										onChange={(e) => setConfirmPassword(e.target.value)}
+									></Form.Control>
+								</Form.Group>
+								<Button style={{ width: '100%' }} type='submit' variant='primary'>
+									Change Password
+								</Button>
+							</Form>
+						</Col>
+					</Row>
+				</Container>
+			</Fade>
+		</>
 	);
 };
 

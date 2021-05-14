@@ -8,6 +8,7 @@ import Loading from '../components/Loading';
 import ErrorMessage from '../components/ErrorMessage';
 import { addToCart } from '../actions/userReducerActions';
 import Snackbar from '../components/Snackbar';
+import Meta from '../components/Meta';
 
 const EventDetails = ({ match }) => {
 	const [message, setMessage] = useState(null);
@@ -150,6 +151,7 @@ const EventDetails = ({ match }) => {
 					<ErrorMessage variant='danger'>{error}</ErrorMessage>
 				) : (
 					<>
+						<Meta title={`Eventify | ${event.name}`} />
 						<Row>
 							<Col sm={12} md={9}>
 								<Image

@@ -7,6 +7,7 @@ import ErrorMessage from '../components/ErrorMessage';
 import { loginUser } from '../actions/userReducerActions';
 import Fade from '@material-ui/core/Fade';
 import { resetPassword_P1 } from '../actions/confirmationReducerActions';
+import Meta from '../components/Meta';
 
 const ForgotPassword = ({ location, history }) => {
 	const dispatch = useDispatch();
@@ -38,32 +39,37 @@ const ForgotPassword = ({ location, history }) => {
 	};
 
 	return (
-		<Fade in={true}>
-			<Container>
-				<Row className='justify-content-md-center'>
-					<Col xs={12} md={6}>
-						<h1>Forgot Password</h1>
-						{loading && <Loading />}
-						{successMessage && <ErrorMessage variant='success'>{successMessage}</ErrorMessage>}
-						{error && <ErrorMessage variant='danger'>{error}</ErrorMessage>}
-						<Form onSubmit={submitHandler}>
-							<Form.Group controlId='email'>
-								<Form.Label>Email Address</Form.Label>
-								<Form.Control
-									type='email'
-									placeholder='Enter email'
-									value={email}
-									onChange={(e) => setEmail(e.target.value)}
-								></Form.Control>
-							</Form.Group>
-							<Button style={{ width: '100%' }} type='submit' variant='primary'>
-								Send Email
-							</Button>
-						</Form>
-					</Col>
-				</Row>
-			</Container>
-		</Fade>
+		<>
+			<Meta title='Eventify | Forgot Password' />
+			<Fade in={true}>
+				<Container>
+					<Row className='justify-content-md-center'>
+						<Col xs={12} md={6}>
+							<h1>Forgot Password</h1>
+							{loading && <Loading />}
+							{successMessage && (
+								<ErrorMessage variant='success'>{successMessage}</ErrorMessage>
+							)}
+							{error && <ErrorMessage variant='danger'>{error}</ErrorMessage>}
+							<Form onSubmit={submitHandler}>
+								<Form.Group controlId='email'>
+									<Form.Label>Email Address</Form.Label>
+									<Form.Control
+										type='email'
+										placeholder='Enter email'
+										value={email}
+										onChange={(e) => setEmail(e.target.value)}
+									></Form.Control>
+								</Form.Group>
+								<Button style={{ width: '100%' }} type='submit' variant='primary'>
+									Send Email
+								</Button>
+							</Form>
+						</Col>
+					</Row>
+				</Container>
+			</Fade>
+		</>
 	);
 };
 
