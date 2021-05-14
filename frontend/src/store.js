@@ -8,7 +8,7 @@ import {
 	adminNewEventReducer,
 } from './reducers/eventsReducer';
 import { adminUsersReducer, userInfoReducer } from './reducers/userReducer';
-import { userConfirmationReducer } from './reducers/confirmationReducer';
+import { userConfirmationReducer, userResetPasswordReducer } from './reducers/confirmationReducer';
 import {
 	adminOrdersReducer,
 	orderDetailsReducer,
@@ -40,6 +40,7 @@ const reducer = combineReducers({
 	adminUsers: adminUsersReducer,
 	adminTickets: adminTicketsReducer,
 	adminPromos: adminPromosReducer,
+	userResetPassword: userResetPasswordReducer,
 });
 
 const getUserInfo = () => {

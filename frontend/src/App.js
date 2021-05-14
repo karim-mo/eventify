@@ -11,12 +11,15 @@ import Confirmation from './views/Confirmation';
 import Order from './views/Order';
 import Profile from './views/Profile';
 import PrivateRoute from './components/PrivateRoute';
+import PrivateRouteReverse from './components/PrivateRouteReverse';
 import { useEffect } from 'react';
 import Ticket from './views/Ticket';
 import TicketerPage from './views/TicketerPage';
 import AdminPage from './views/AdminPage';
 import EditEvent from './views/EditEvent';
 import AddEvent from './views/AddEvent';
+import ForgotPassword from './views/ForgotPassword';
+import ResetPassword from './views/ResetPassword';
 
 const App = () => {
 	return (
@@ -32,6 +35,8 @@ const App = () => {
 				<Route path='/cart' component={Cart} />
 				<Route path='/confirmation/:id' component={Confirmation} />
 				<Route path='/orders/:id' component={Order} />
+				<PrivateRouteReverse path='/forgotpw' exact component={ForgotPassword} />
+				<PrivateRouteReverse path='/resetpw/:id' exact component={ResetPassword} />
 				<PrivateRoute path='/members/:name/profile' exact component={Profile} />
 				<PrivateRoute path='/members/:name/profile/:key' exact component={Profile} />
 				<PrivateRoute path='/members/:name/profile/:key/page/:pageNo' exact component={Profile} />

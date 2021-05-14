@@ -192,7 +192,46 @@ const createTicketer = asyncHandler(async (req, res) => {
 	}
 });
 
+const forgotPassword = asyncHandler(async (req, res) => {
+	const { email } = req.body;
+	const emailValid = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+	if (!emailValid.test(email)) {
+		res.status(400);
+		throw new Error('Please use a valid email');
+	}
+	const user = await User.findOne({ email });
+	if (user) {
+		const passResetURL = crypto.randomBytes(20).toString('hex') + user._id;
+		user.confirmationURL = passResetURL;
+		await user.save();
+		await sendEmail({
+			to: email,
+			subject: 'Eventify Password reset',
+			text: `You requested a password reset at Eventify, if this wasn't you then we recommend you change your password immidiately.\nIf it was you, please proceed with this link http://localhost:3000/resetpw/${passResetURL}`,
+		});
+		res.json({});
+	} else {
+		res.status(400);
+		throw new Error('Unknown error occurred');
+	}
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+	const { passResetURL, newPassword } = req.body;
+	const user = await User.findOne({ confirmationURL: passResetURL });
+	if (user) {
+		user.confirmationURL = '';
+		user.password = newPassword;
+		await user.save();
+		res.json({});
+	} else {
+		res.status(400);
+		throw new Error('Unknown error occurred');
+	}
+});
+
 router.route('/').get(protect, admin, getUsers).put(protect, admin, createTicketer);
+router.route('/userpassword').post(forgotPassword).put(resetPassword);
 router.route('/auth').post(login).put(register);
 router.route('/confirm').put(confirmation).post(reconfirmation);
 router.route('/checkadmin').post(protect, admin, allowAdmin);
