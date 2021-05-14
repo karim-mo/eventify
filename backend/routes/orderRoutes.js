@@ -76,7 +76,7 @@ const buyTicketsForOrder = async (orderID) => {
 							eventName: event.name,
 							URL: 'N/A',
 						});
-						const URL = `http://localhost:3000/tickets/${newTicket._id}`;
+						const URL = `https://eventify-global.herokuapp.com/tickets/${newTicket._id}`;
 						newTicket.URL = URL;
 						await newTicket.save();
 
@@ -444,26 +444,8 @@ const confirmOrder = asyncHandler(async (req, res) => {
 });
 
 const getOrders = asyncHandler(async (req, res) => {
-	const ordersPerPage = 10;
-	const pageNo = Number(req.query.pageNo) || 1;
-
-	const ordersCount = await Order.countDocuments({});
-	if (ordersCount) {
-		const pages = Math.ceil(ordersCount / ordersPerPage);
-		if (pages < pageNo) {
-			res.status(400);
-			throw new Error('No orders to show');
-		}
-		const orders = await Order.find({})
-			.limit(ordersPerPage)
-			.skip(ordersPerPage * (pageNo - 1))
-			.sort({ createdAt: -1 });
-
-		res.json({ orders, pages });
-	} else {
-		res.status(404);
-		throw new Error('No orders to show');
-	}
+	try {
+	} catch (error) {}
 });
 
 const getOrderByID = asyncHandler(async (req, res) => {
@@ -541,12 +523,10 @@ const getOrderByID = asyncHandler(async (req, res) => {
 								paymentID: response.body.id,
 							};
 							await order.save();
-							const _user = await User.findById(order.userID);
-
 							res.json({
 								id: order._id,
-								name: _user.name,
-								email: _user.email,
+								name: req.user.name,
+								email: req.user.email,
 								paymentDetails: order.paymentDetails,
 								paymentMethod: order.paymentMethod,
 								itemsPrice: order.itemsPrice,
@@ -567,12 +547,10 @@ const getOrderByID = asyncHandler(async (req, res) => {
 						order.paymentDetails.status = 'APPROVED';
 						await order.save();
 					}
-					const _user = await User.findById(order.userID);
-
 					res.json({
 						id: order._id,
-						name: _user.name,
-						email: _user.email,
+						name: req.user.name,
+						email: req.user.email,
 						paymentDetails: order.paymentDetails,
 						paymentMethod: order.paymentMethod,
 						itemsPrice: order.itemsPrice,
@@ -712,11 +690,10 @@ const applyPromo = asyncHandler(async (req, res) => {
 						paymentID: response.body.id,
 					};
 					await order.save();
-					const _user = await User.findById(order.userID);
 					res.json({
 						id: order._id,
-						name: _user.name,
-						email: _user.email,
+						name: req.user.name,
+						email: req.user.email,
 						itemsPrice: order.itemsPrice,
 						fees: order.fees,
 						paymentDetails: order.paymentDetails,
@@ -746,16 +723,8 @@ const deleteOrderByID = asyncHandler(async (req, res) => {
 });
 
 const editOrderbyID = asyncHandler(async (req, res) => {
-	const order = await Order.findById(req.params.id);
-
-	if (order && order.paymentDetails.status !== 'CANCELLED') {
-		order.paymentDetails.status = 'CANCELLED';
-		await order.save();
-		res.json({});
-	} else {
-		res.status(404);
-		throw new Error('Cannot perform operation');
-	}
+	try {
+	} catch (error) {}
 });
 
 router

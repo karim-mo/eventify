@@ -16,7 +16,10 @@ const getPublicTicketDetails = asyncHandler(async (req, res) => {
 	if (ticket) {
 		const user = await User.findById(ticket.userID);
 		const event = await Event.findById(ticket.eventID);
-		if (req.user.eventID && req.user.eventID.toString() === ticket.eventID.toString()) {
+		if (
+			req.user.eventID &&
+			req.user.eventID.toString() === ticket.eventID.toString()
+		) {
 			res.json({
 				owner: user.name,
 				owner_email: user.email,
@@ -42,7 +45,10 @@ const markTicketAsSeen = asyncHandler(async (req, res) => {
 	if (ticket) {
 		const user = await User.findById(ticket.userID);
 		const event = await Event.findById(ticket.eventID);
-		if (req.user.eventID && req.user.eventID.toString() === ticket.eventID.toString()) {
+		if (
+			req.user.eventID &&
+			req.user.eventID.toString() === ticket.eventID.toString()
+		) {
 			if (ticket.seen) {
 				res.status(400);
 				throw new Error('Ticket is already seen');
@@ -117,47 +123,11 @@ const getUserTickets = asyncHandler(async (req, res) => {
 	}
 });
 
-const getTickets = asyncHandler(async (req, res) => {
-	const ticketsPerPage = 10;
-	const pageNo = Number(req.query.pageNo) || 1;
-
-	const ticketsCount = await Ticket.countDocuments({});
-	if (ticketsCount) {
-		const pages = Math.ceil(ticketsCount / ticketsPerPage);
-		if (pages < pageNo) {
-			res.status(400);
-			throw new Error('No tickets to show.');
-		}
-		const tickets = await Ticket.find({})
-			.limit(ticketsPerPage)
-			.skip(ticketsPerPage * (pageNo - 1))
-			.sort({ createdAt: -1 });
-
-		res.json({ tickets, pages });
-	} else {
-		res.status(404);
-		throw new Error('No tickets to show.');
-	}
-});
-
-const deleteTicket = asyncHandler(async (req, res) => {
-	const ticket = await Ticket.findById(req.params.id);
-	if (ticket) {
-		await Ticket.deleteOne({ _id: ticket._id });
-		res.json({});
-	} else {
-		res.status(404);
-		throw new Error('No tickets to delete');
-	}
-});
-
-router.route('/').get(protect, admin, getTickets);
 router.route('/usertickets').get(protect, getUserTickets);
 router
 	.route('/:id')
 	.get(protect, ticketer, getPublicTicketDetails)
 	.put(protect, ticketer, markTicketAsSeen)
-	.post(protect, getTicketDetails)
-	.delete(protect, admin, deleteTicket);
+	.post(protect, getTicketDetails);
 
 export default router;

@@ -9,7 +9,6 @@ import cartRoutes from './routes/cartRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import ticketRoutes from './routes/ticketRoutes.js';
-import promoRoutes from './routes/promoRoutes.js';
 
 dotenv.config();
 
@@ -21,7 +20,9 @@ const connectMongo = async () => {
 			useCreateIndex: true,
 		});
 
-		console.log(`MongoDB Connected: ${conn.connection.host}`.cyan.underline);
+		console.log(
+			`MongoDB Connected: ${conn.connection.host}`.cyan.underline
+		);
 	} catch (error) {
 		console.error(`Error: ${error.message}`.red.underline.bold);
 		process.exit(1);
@@ -34,7 +35,10 @@ const app = express();
 
 app.use(function (req, res, next) {
 	res.setHeader('Access-Control-Allow-Origin', '*');
-	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+	res.setHeader(
+		'Access-Control-Allow-Methods',
+		'GET, POST, OPTIONS, PUT, PATCH, DELETE'
+	);
 	res.setHeader('Access-Control-Allow-Headers', '*');
 
 	res.setHeader('Access-Control-Allow-Credentials', true);
@@ -49,7 +53,6 @@ app.use('/v3/cart', cartRoutes);
 app.use('/v3/user', userRoutes);
 app.use('/v3/orders', orderRoutes);
 app.use('/v3/tickets', ticketRoutes);
-app.use('/v3/promos', promoRoutes);
 
 app.get('/', (req, res) => {
 	res.send('API online');
@@ -61,5 +64,8 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () =>
-	console.log(`Server running in ${process.env.DEV_MODE} mode on port ${PORT}`.green.bold)
+	console.log(
+		`Server running in ${process.env.DEV_MODE} mode on port ${PORT}`.green
+			.bold
+	)
 );

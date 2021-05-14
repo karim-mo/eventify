@@ -68,7 +68,6 @@ const userSchema = mongoose.Schema(
 		eventID: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Event',
-			default: null,
 		},
 		shippingAddresses: [shippingAddressSchema],
 		cart: [cartSchema],
