@@ -98,7 +98,7 @@ const Cart = ({ history }) => {
 								<Loading />
 							) : (
 								<>
-									<Col md={8}>
+									<Col md={8} className='mb-3'>
 										<h1>Ticket Cart</h1>
 										{isLogged && user.cart.length === 0 ? (
 											<ErrorMessage variant='info'>
