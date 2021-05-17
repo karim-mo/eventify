@@ -8,7 +8,7 @@ import jwt from 'jsonwebtoken';
 const router = express.Router();
 
 const getEvents = asyncHandler(async (req, res) => {
-	const eventsPerPage = 10;
+	const eventsPerPage = 9;
 	const pageNo = Number(req.query.pageNo) || 1;
 	if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
 		try {
