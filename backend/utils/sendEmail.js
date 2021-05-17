@@ -8,8 +8,8 @@ const sendEmail = asyncHandler(async (details) => {
 		port: 465,
 		secure: true,
 		auth: {
-			user: process.env.MAIL_USER,
-			pass: process.env.MAIL_PW,
+			username: process.env.MAIL_USER,
+			password: process.env.MAIL_PW,
 		},
 	});
 
