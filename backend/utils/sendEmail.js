@@ -14,7 +14,7 @@ const sendEmail = asyncHandler(async (details) => {
 	});
 
 	let info = await transporter.sendMail({
-		from: process.env.GMAIL_USER,
+		from: process.env.MAIL_USER,
 		to: details.to,
 		subject: details.subject || 'Please confirm your email address ✔',
 		text:
