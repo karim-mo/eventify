@@ -72,7 +72,7 @@ const buyTicketsForOrder = async (orderID) => {
 							eventName: event.name,
 							URL: 'N/A',
 						});
-						const URL = `https://eventify-global.herokuapp.com/tickets/${newTicket._id}`;
+						const URL = `http://www.eventify-global.com/tickets/${newTicket._id}`;
 						newTicket.URL = URL;
 						await newTicket.save();
 

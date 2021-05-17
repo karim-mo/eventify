@@ -20,7 +20,7 @@ const sendEmail = asyncHandler(async (details) => {
 		text:
 			details.text ||
 			`In order to continue using Eventify, you need to click on the link below to verify your email address.
-        https://eventify-global.herokuapp.com/confirmation/${details.URL}`,
+        http://www.eventify-global.com/confirmation/${details.URL}`,
 	});
 });
 
