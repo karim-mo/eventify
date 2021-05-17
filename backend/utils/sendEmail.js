@@ -4,12 +4,12 @@ import colors from 'colors';
 
 const sendEmail = asyncHandler(async (details) => {
 	let transporter = nodemailer.createTransport({
-		host: 'smtp.gmail.com',
+		host: 'smtpout.secureserver.net',
 		port: 465,
 		secure: true,
 		auth: {
-			user: process.env.GMAIL_USER,
-			pass: process.env.GMAIL_PW,
+			user: process.env.MAIL_USER,
+			pass: process.env.MAIL_PW,
 		},
 	});
 
