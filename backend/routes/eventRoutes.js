@@ -203,7 +203,7 @@ const getUserHostedEvents = asyncHandler(async (req, res) => {
 	const eventsCount = await Event.countDocuments({ authorID: req.user._id });
 	if (eventsCount) {
 		const pages = Math.ceil(eventsCount / eventsPerPage);
-		if (pages > pageNo) {
+		if (pages < pageNo) {
 			res.status(404);
 			throw new Error('No events to show');
 		}
