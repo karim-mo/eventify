@@ -10,10 +10,12 @@ import userRoutes from './routes/userRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import ticketRoutes from './routes/ticketRoutes.js';
 import promoRoutes from './routes/promoRoutes.js';
-const { AwakeHeroku } = require('awake-heroku');
+import { AwakeHeroku } from 'awake-heroku';
 
 dotenv.config();
 AwakeHeroku.add('https://eventify-global.herokuapp.com/');
+AwakeHeroku.add('https://eventify-api-v3.herokuapp.com/');
+
 AwakeHeroku.start();
 
 const connectMongo = async () => {
