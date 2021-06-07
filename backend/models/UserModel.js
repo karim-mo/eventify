@@ -59,7 +59,6 @@ const userSchema = mongoose.Schema(
 		},
 		confirmationURL: {
 			type: String,
-			unique: true,
 		},
 		isConfirmed: {
 			type: Boolean,
