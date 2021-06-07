@@ -149,7 +149,7 @@ const Order = ({ match, history }) => {
 				<ErrorMessage variant='danger'>{error}</ErrorMessage>
 			) : (
 				<>
-					<Meta title={`Eventify | Order #${order._id}`} />
+					<Meta title={`Eventify | Order #${order.id}`} />
 					<h1>Order #{order.id}</h1>
 					<Row>
 						<Col md={8}>
