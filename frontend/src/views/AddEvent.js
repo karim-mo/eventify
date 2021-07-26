@@ -27,7 +27,7 @@ import {
 	listEvents,
 } from '../actions/eventReducerActions';
 import axios from 'axios';
-import countryList from 'react-select-country-list';
+import countryList from '../utils/country-list/country-list';
 import Select from 'react-select';
 import Meta from '../components/Meta';
 

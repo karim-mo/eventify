@@ -429,7 +429,7 @@ const AdminPage = ({ match, history }) => {
 																</Link>
 															</td>
 															<td>{order.createdAt.slice(0, 10)}</td>
-															<td>{order.totalPrice}</td>
+															<td>${order.totalPrice}</td>
 															<td>{order.paymentDetails.status}</td>
 															<td>
 																{order.paymentDetails.status !==
