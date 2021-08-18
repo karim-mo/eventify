@@ -6,12 +6,23 @@ import Event from '../models/EventModel.js';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import sendEmail from '../utils/sendEmail.js';
+import postgresClient from '../utils/postgres.js';
+import bcrypt from 'bcryptjs';
+import { Users } from '../utils/db.js';
 
 const router = express.Router();
 
 const login = asyncHandler(async (req, res) => {
 	const { email, password } = req.body;
-	const user = await User.findOne({ email });
+	const {
+		rows: { [0]: user },
+	} = await postgresClient.query(
+		`SELECT * FROM users
+        WHERE email = $1
+        LIMIT 1`,
+		[email]
+	);
+
 	if (user) {
 		if (!user.isConfirmed) {
 			res.status(401);
@@ -19,13 +30,33 @@ const login = asyncHandler(async (req, res) => {
 				'Email is not verified, please check your email to finish verification or try re-registering to re-send a verification to your email.'
 			);
 		}
-		const checkPw = await user.matchPassword(password);
+		const checkPw = await bcrypt.compare(password, user.password);
 		if (checkPw) {
+			let cart = [];
+			const { rows: cartItems } = await postgresClient.query(
+				`SELECT ticket._id, ticket.name, ticket."ticketPrice", ticket."eventID", ticket."createdAt" FROM ticket
+                JOIN "userCarts" AS cart
+                ON ticket."userCartID" = cart._id
+                WHERE "userID" = $1`,
+				[user._id]
+			);
+
+			cartItems.forEach((item) => {
+				console.log(item);
+				const ticket = {
+					name: item.name,
+					ticketPrice: item.ticketPrice,
+					eventID: item.eventID,
+				};
+
+				cart.push(ticket);
+			});
+
 			res.json({
 				email: user.email,
 				name: user.name,
 				country: user.country,
-				cart: user.cart,
+				cart,
 				joinedOn: user.createdAt,
 				id: user._id,
 				token: jwt.sign({ id: user._id }, process.env.JWT_KEY, {
@@ -45,16 +76,34 @@ const login = asyncHandler(async (req, res) => {
 const register = asyncHandler(async (req, res) => {
 	const { confirmationURL } = req.body;
 
-	const user = await User.findOne({ confirmationURL });
+	let user = await Users.simpleFindOne('confirmationURL', confirmationURL);
 
 	if (user && !user.isConfirmed) {
-		user.isConfirmed = true;
-		await user.save();
+		user = await Users.update(['isConfirmed'], ['TRUE'], { single: ['_id'] }, [user._id]);
+		let cart = [];
+		const { rows: cartItems } = await postgresClient.query(
+			`SELECT ticket._id, ticket.name, ticket."ticketPrice", ticket."eventID", ticket."createdAt" FROM ticket
+                JOIN "userCarts" AS cart
+                ON ticket."userCartID" = cart._id
+                WHERE "userID" = $1`,
+			[user._id]
+		);
+
+		cartItems.forEach((item) => {
+			console.log(item);
+			const ticket = {
+				name: item.name,
+				ticketPrice: item.ticketPrice,
+				eventID: item.eventID,
+			};
+
+			cart.push(ticket);
+		});
 		res.json({
 			name: user.name,
 			email: user.email,
 			country: user.country,
-			cart: user.cart,
+			cart,
 			joinedOn: user.createdAt,
 			id: user._id,
 			token: jwt.sign({ id: user._id }, process.env.JWT_KEY, {
@@ -70,7 +119,8 @@ const register = asyncHandler(async (req, res) => {
 const confirmation = asyncHandler(async (req, res) => {
 	const { name, email, password, country } = req.body;
 
-	const user = await User.findOne({ email });
+	const user = await Users.simpleFindOne('email', email);
+
 	if (user && user.isConfirmed) {
 		res.status(400);
 		throw new Error('Email already exists');
@@ -82,21 +132,22 @@ const confirmation = asyncHandler(async (req, res) => {
 			email: user.email,
 		});
 	} else {
-		const user = await User.create({
+		const salt = await bcrypt.genSalt(10);
+		const hash = await bcrypt.hash(password, salt);
+
+		const _user = await Users.create({
 			name,
 			email,
-			password,
+			password: hash,
 			country,
-			confirmationURL: 'n/a',
-			admin: false,
 		});
 
-		if (user) {
-			user.confirmationURL = crypto.randomBytes(20).toString('hex') + user._id;
-			await user.save();
+		if (_user) {
+			const urlHash = crypto.randomBytes(20).toString('hex') + _user._id;
+			await Users.update(['confirmationURL'], [urlHash], { single: ['_id'] }, [_user._id]);
 			await sendEmail({
-				to: user.email,
-				URL: user.confirmationURL,
+				to: _user.email,
+				URL: urlHash,
 			});
 			res.json({
 				awaitingConfirmation: true,
@@ -111,14 +162,14 @@ const confirmation = asyncHandler(async (req, res) => {
 const reconfirmation = asyncHandler(async (req, res) => {
 	const { email } = req.body;
 
-	const user = await User.findOne({ email });
+	const user = await Users.simpleFindOne('email', email);
 
 	if (user) {
-		user.confirmationURL = crypto.randomBytes(20).toString('hex') + user._id;
-		await user.save();
+		const urlHash = crypto.randomBytes(20).toString('hex') + user._id;
+		await Users.update(['confirmationURL'], [urlHash], { single: ['_id'] }, [user._id]);
 		await sendEmail({
 			to: user.email,
-			URL: user.confirmationURL,
+			URL: urlHash,
 		});
 		res.json({
 			awaitingConfirmation: true,

@@ -4,6 +4,7 @@ import colors from 'colors';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
+import postgresClient from './utils/postgres.js';
 import eventRoutes from './routes/eventRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
 import userRoutes from './routes/userRoutes.js';
@@ -30,6 +31,18 @@ const connectMongo = async () => {
 
 connectMongo();
 
+const connectPostgres = async () => {
+	try {
+		await postgresClient.connect();
+		console.log(`PostgresSQL Connected`.cyan.underline);
+	} catch (error) {
+		console.error(`Error: ${error.message}`.red.underline.bold);
+		process.exit(1);
+	}
+};
+
+connectPostgres();
+
 const app = express();
 
 app.use(function (req, res, next) {
@@ -52,7 +65,7 @@ app.use('/v3/tickets', ticketRoutes);
 app.use('/v3/promos', promoRoutes);
 
 app.get('/', (req, res) => {
-	res.send('API online');
+	res.status(401).send('Unauthorized');
 });
 
 app.use(notFound);
